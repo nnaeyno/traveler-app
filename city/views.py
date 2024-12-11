@@ -1,9 +1,11 @@
-from city.models import City, Place
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status, permissions
-from rest_framework.generics import ListAPIView, CreateAPIView
 from django.db.models import Count, Prefetch
+from rest_framework import permissions, status
+from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from city.models import City, Place
+
 from .serializers import CitySerializer
 
 
@@ -11,6 +13,7 @@ class CityView(APIView):
     """
     Comprehensive view for city-related operations
     """
+
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = CitySerializer
 
@@ -25,15 +28,9 @@ class CityView(APIView):
 
             request.user.cities.add(city)
 
-            return Response(
-                CitySerializer(city).data,
-                status=status.HTTP_201_CREATED
-            )
+            return Response(CitySerializer(city).data, status=status.HTTP_201_CREATED)
 
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, city_id=None):
         """
@@ -41,22 +38,24 @@ class CityView(APIView):
         """
         if city_id:
             try:
-                city = request.user.cities.prefetch_related(
-                    Prefetch('places', queryset=Place.objects.all()[:5])
-                ).annotate(
-                    places_count=Count('places')
-                ).get(id=city_id)
+                city = (
+                    request.user.cities.prefetch_related(
+                        Prefetch("places", queryset=Place.objects.all()[:5])
+                    )
+                    .annotate(places_count=Count("places"))
+                    .get(id=city_id)
+                )
 
                 serializer = CitySerializer(city)
                 return Response(serializer.data)
 
             except City.DoesNotExist:
                 return Response(
-                    {'detail': 'City not found or not associated with user'},
-                    status=status.HTTP_404_NOT_FOUND
+                    {"detail": "City not found or not associated with user"},
+                    status=status.HTTP_404_NOT_FOUND,
                 )
 
-        cities = request.user.cities.annotate(places_count=Count('places'))
+        cities = request.user.cities.annotate(places_count=Count("places"))
         serializer = self.serializer_class(cities, many=True)
         return Response(serializer.data)
 

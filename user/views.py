@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from city.models import City
 from city.serializers import CitySerializer
+
 from .models import User
 from .serializers import (
     UserLoginSerializer,
@@ -178,6 +179,7 @@ class AddCityToUserView(APIView):
     """
     View to add a city to a user's cities
     """
+
     permission_classes = [IsAuthenticated]
     serializer_class = CitySerializer
 
@@ -185,44 +187,39 @@ class AddCityToUserView(APIView):
         """
         Add a city to a user's cities by username or user ID
         """
-        city_id = request.data.get('city_id')
-        username = request.data.get('username')
-        user_id = request.data.get('user_id')
+        city_id = request.data.get("city_id")
+        username = request.data.get("username")
+        user_id = request.data.get("user_id")
 
         try:
-            # Validate city exists
             city = City.objects.get(id=city_id)
 
-            # Determine which user to add the city to
             if username:
                 user_to_add = User.objects.get(username=username)
             elif user_id:
                 user_to_add = User.objects.get(id=user_id)
             else:
                 return Response(
-                    {'detail': 'Must provide either username or user_id'},
-                    status=status.HTTP_400_BAD_REQUEST
+                    {"detail": "Must provide either username or user_id"},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            # Add city to the specified user's cities
             user_to_add.cities.add(city)
 
             return Response(
                 {
-                    'detail': 'City added successfully',
-                    'city': self.serializer_class(city).data,
-                    'added_to_user': user_to_add.username
+                    "detail": "City added successfully",
+                    "city": self.serializer_class(city).data,
+                    "added_to_user": user_to_add.username,
                 },
-                status=status.HTTP_200_OK
+                status=status.HTTP_200_OK,
             )
 
         except City.DoesNotExist:
             return Response(
-                {'detail': 'City not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"detail": "City not found"}, status=status.HTTP_404_NOT_FOUND
             )
         except User.DoesNotExist:
             return Response(
-                {'detail': 'User not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND
             )

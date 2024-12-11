@@ -11,9 +11,7 @@ def validate_photo(value):
     """
     max_size = 5 * 1024 * 1024  # 5MB
     if value.size > max_size:
-        raise serializers.ValidationError(
-            "Image size should not exceed 5MB."
-        )
+        raise serializers.ValidationError("Image size should not exceed 5MB.")
     return value
 
 
@@ -43,9 +41,9 @@ class UniqueFieldValidator(UserUpdateValidator):
         User = get_user_model()
 
         if (
-                User.objects.exclude(pk=user.pk)
-                        .filter(**{self.field_name: new_value})
-                        .exists()
+            User.objects.exclude(pk=user.pk)
+            .filter(**{self.field_name: new_value})
+            .exists()
         ):
             return False, {self.field_name: self.error_message}
         return True, None
