@@ -1,6 +1,20 @@
 from abc import ABC, abstractmethod
+
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from rest_framework import serializers
+
+
+def validate_photo(value):
+    """
+    photo validation for size
+    """
+    max_size = 5 * 1024 * 1024  # 5MB
+    if value.size > max_size:
+        raise serializers.ValidationError(
+            "Image size should not exceed 5MB."
+        )
+    return value
 
 
 class UserUpdateValidator(ABC):
@@ -25,9 +39,14 @@ class UniqueFieldValidator(UserUpdateValidator):
         excluding the current user
         """
         from django.contrib.auth import get_user_model
+
         User = get_user_model()
 
-        if User.objects.exclude(pk=user.pk).filter(**{self.field_name: new_value}).exists():
+        if (
+                User.objects.exclude(pk=user.pk)
+                        .filter(**{self.field_name: new_value})
+                        .exists()
+        ):
             return False, {self.field_name: self.error_message}
         return True, None
 
@@ -43,5 +62,4 @@ class PasswordValidator(UserUpdateValidator):
             validate_password(new_password, user)
             return True, None
         except ValidationError as e:
-            return False, {'password': list(e.messages)}
-
+            return False, {"password": list(e.messages)}

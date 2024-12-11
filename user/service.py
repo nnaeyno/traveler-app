@@ -36,4 +36,4 @@ class UserUpdateService:
             user.save()
             return True, None
         except ValidationError as e:
-            return False, {'detail': e.message_dict}
+            return False, {"detail": e.message_dict}
