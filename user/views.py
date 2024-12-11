@@ -11,12 +11,16 @@ from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.exceptions import TokenError
 
+from .service import UserUpdateService
+from .validators import UniqueFieldValidator, PasswordValidator
+
 
 class UserRegistrationView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = UserRegistrationSerializer
 
     def post(self, request):
-        serializer = UserRegistrationSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             refresh = RefreshToken.for_user(user)
@@ -38,9 +42,10 @@ class UserRegistrationView(APIView):
 
 class UserLoginView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = UserLoginSerializer
 
     def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             identifier = serializer.validated_data['identifier']
             password = serializer.validated_data['password']
@@ -96,15 +101,27 @@ class UserLogoutView(APIView):
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
+    serializer_class = UserProfileSerializer
+    update_service = UserUpdateService({
+        'username': UniqueFieldValidator(
+            'username',
+            'This username is already taken.'
+        ),
+        'email': UniqueFieldValidator(
+            'email',
+            'This email is already in use.'
+        ),
+        'password': PasswordValidator()
+    })
 
     def get(self, request):
         user = request.user
-        serializer = UserProfileSerializer(user)
+        serializer = self.serializer_class(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         user = request.user
-        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        serializer = self.serializer_class(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -119,53 +136,17 @@ class UserProfileView(APIView):
             return Response({"message": "Profile photo removed."}, status=status.HTTP_200_OK)
         return Response({"error": "No profile photo to remove."}, status=status.HTTP_400_BAD_REQUEST)
 
-
-class UserSettingsView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def patch(self, request):
+        """
+        Handle PATCH request for user profile update
+        """
         user = request.user
-        data = request.data
-        if 'username' in data:
-            new_username = data['username']
-            if User.objects.exclude(pk=user.pk).filter(username=new_username).exists():
-                return Response(
-                    {'username': 'This username is already taken.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            user.username = new_username
+        update_data = request.data
 
-        if 'email' in data:
-            new_email = data['email']
-            if User.objects.exclude(pk=user.pk).filter(email=new_email).exists():
-                return Response(
-                    {'email': 'This email is already in use.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            user.email = new_email
+        success, error = self.update_service.update_user(user, update_data)
 
-        if 'profile_photo' in data:
-            user.profile_photo = data['profile_photo']
+        if not success:
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
-        if 'password' in data:
-            new_password = data['password']
-
-            try:
-                validate_password(new_password, user)
-            except ValidationError as e:
-                return Response(
-                    {'password': list(e.messages)},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            user.set_password(new_password)
-        try:
-            user.full_clean()
-            user.save()
-        except ValidationError as e:
-            return Response(
-                {'detail': e.message_dict},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        serializer = UserProfileSerializer(user)
+        serializer = self.serializer_class(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
