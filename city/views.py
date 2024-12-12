@@ -1,12 +1,13 @@
 from django.db.models import Count, Prefetch
-from rest_framework import permissions, status
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework import status, generics, filters
+from rest_framework.generics import ListAPIView, get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_filters.rest_framework import DjangoFilterBackend
+from city.models import City, Place, Location
 
-from city.models import City, Place
-
-from .serializers import CitySerializer
+from .serializers import CitySerializer, PlaceSerializer
 
 
 class CityView(APIView):
@@ -14,7 +15,7 @@ class CityView(APIView):
     Comprehensive view for city-related operations
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     serializer_class = CitySerializer
 
     def post(self, request):
@@ -65,8 +66,160 @@ class CommentView(APIView):
 
 
 class ListPlacesView(ListAPIView):
-    pass
+    permissions = [IsAuthenticated]
+    serializer_class = PlaceSerializer
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter
+    ]
+
+    filterset_fields = {
+        'price': ['gte', 'lte'],
+        'average_rating': ['gte', 'lte'],
+    }
+
+    ordering_fields = [
+        'name',
+        'price',
+        'average_rating',
+        'created_at'
+    ]
+
+    search_fields = [
+        'name',
+        'description'
+    ]
+
+    def get_queryset(self):
+        """
+        Override get_queryset to filter places by city ID from URL parameter
+        """
+        city_id = self.kwargs.get('city_id')
+        return Place.objects.filter(city_id=city_id).select_related('location')
 
 
 class PlaceView(APIView):
-    pass
+    permissions = [IsAuthenticated]
+    serializer_class = PlaceSerializer
+
+    def post(self, request):
+        """
+        Create a new place
+
+        Required fields in request:
+        - name
+        - city_id
+        - location_id
+        - price
+
+        Optional fields:
+        - description
+        - photo
+        """
+        data = request.data.copy()
+        required_fields = ['name', 'city_id', 'location_id', 'price']
+        for field in required_fields:
+            if field not in data:
+                return Response(
+                    {"error": f"{field} is required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        try:
+            city = get_object_or_404(City, id=data['city_id'])
+            location = get_object_or_404(Location, id=data['location_id'])
+            serializer = self.serializer_class(data=data)
+
+            if serializer.is_valid():
+                place = serializer.save(
+                    city=city,
+                    location=location
+                )
+
+                return Response(
+                    self.serializer_class(place).data,
+                    status=status.HTTP_201_CREATED
+                )
+
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def get(self, request, place_id):
+        """
+        Retrieve a specific place by its ID
+
+        Includes:
+        - Place details
+        - Recent comments
+        - Visit information
+        """
+        try:
+            place = get_object_or_404(
+                Place.objects.select_related('city', 'location')
+                .prefetch_related('comments', 'ratings', 'visits'),
+                id=place_id
+            )
+
+            serializer = self.serializer_class(place)
+            response_data = serializer.data
+            response_data.update({
+                'recent_comments': [{
+                    'user': comment.user.username,
+                    'text': comment.text,
+                    'created_at': comment.created_at
+                } for comment in place.comments.all()[:5]],
+
+                'total_visits': place.visits.count(),
+                'total_comments': place.comments.count(),
+                'total_ratings': place.ratings.count()
+            })
+
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    def put(self, request, place_id):
+        """
+        Update an existing place
+
+        Allows partial updates
+        """
+        try:
+            place = get_object_or_404(Place, id=place_id)
+
+            serializer = self.serializer_class(
+                place,
+                data=request.data,
+                partial=True
+            )
+
+            if serializer.is_valid():
+                updated_place = serializer.save()
+                return Response(
+                    self.serializer_class(updated_place).data,
+                    status=status.HTTP_200_OK
+                )
+
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
