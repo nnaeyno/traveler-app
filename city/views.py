@@ -40,7 +40,7 @@ class CityView(APIView):
             try:
                 city = (
                     request.user.cities.prefetch_related(
-                        Prefetch("places", queryset=Place.objects.all()[:5])
+                        Prefetch("places", queryset=Place.objects.all())
                     )
                     .annotate(places_count=Count("places"))
                     .get(id=city_id)
