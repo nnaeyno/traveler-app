@@ -20,3 +20,15 @@ Notify users when someone:
 * Likes or follows them.
 
 install django-leaflet as well as gdal (brew install gdal pip install gdal)
+
+# TO DO
+
+1. [ ] dynamic city id (first page where user chooses city)
+2. [ ] login/register pages
+3. [ ] refresh after adding place
+4. [ ] comments and ratings for a place
+5. [ ] display better page for a place
+6. [ ] notifications
+7. [ ] django web component
+8. [ ] luggage app 
+
