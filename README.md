@@ -18,3 +18,6 @@ Notify users when someone:
 * Votes on a place they saved.
 * Leaves a comment on their saved place.
 * Likes or follows them.
+
+
+pip install gdal

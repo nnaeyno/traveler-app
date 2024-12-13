@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+{% load leaflet_tags %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <meta charset="UTF-8">
+
+    {% leaflet_js %}
+    {% leaflet_css %}
+</head>
+<body>
+   {% leaflet_map "map" callback="window.map_init_basic" %}
+<script>
+    window.addEventListener("map:init", function (e) {
+        const detail = e.detail;
+        navigator.geolocation.getCurrentPosition(position => {
+            console.log(position)
+            detail.map.setView([position.coords.latitude, position.coords.longitude], 15)
+        })
+        e.detail.map.on("click", c => {
+            const marker = L.marker([c.latlng.lat, c.latlng.lng]).addTo(detail.map);
+            marker.bindPopup("<input type='text'/>")
+
+        })
+    }, false);
+    </script>
+</body>
+</html>
