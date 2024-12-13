@@ -11,19 +11,51 @@
 </head>
 <body>
    {% leaflet_map "map" callback="window.map_init_basic" %}
+
 <script>
     window.addEventListener("map:init", function (e) {
         const detail = e.detail;
+
+        // Center map on user's current location
         navigator.geolocation.getCurrentPosition(position => {
             console.log(position)
             detail.map.setView([position.coords.latitude, position.coords.longitude], 15)
         })
-        e.detail.map.on("click", c => {
-            const marker = L.marker([c.latlng.lat, c.latlng.lng]).addTo(detail.map);
-            marker.bindPopup("<input type='text'/>")
 
+        // Add marker and popup on map click
+        e.detail.map.on("click", c => {
+            const lat = c.latlng.lat;
+            const lng = c.latlng.lng;
+
+            const formHtml = `
+                <form method="post" action="/api/places/" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <label for="id_name">Name:</label>
+                    <input type="text" id="id_name" name="name" required/><br/>
+
+                    <label for="id_city">City ID:</label>
+                    <input type="number" id="id_city" name="city" required/><br/>
+
+                    <label for="id_price">Price:</label>
+                    <input type="number" id="id_price" name="price" required/><br/>
+
+                    <label for="id_description">Description:</label>
+                    <textarea id="id_description" name="description"></textarea><br/>
+
+                    <label for="id_photo">Photo:</label>
+                    <input type="file" id="id_photo" name="photo" accept="image/*"/><br/>
+
+                    <input type="hidden" name="latitude" value="${lat}" />
+                    <input type="hidden" name="longitude" value="${lng}" />
+
+                    <button type="submit">Save Place</button>
+                </form>
+            `;
+
+            const marker = L.marker([lat, lng]).addTo(detail.map);
+            marker.bindPopup(formHtml).openPopup();
         })
     }, false);
-    </script>
+</script>
 </body>
 </html>

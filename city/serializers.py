@@ -1,24 +1,8 @@
 from django.core.validators import FileExtensionValidator
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from city.models import City, Place, PlaceRating, UserPlaceVisit
-
-
-def get_comments_count(obj):
-    """
-    Get the total number of comments for this place
-    """
-    return obj.comments.count()
-
-
-def get_location_details(obj):
-    """
-    Retrieve additional location information
-    """
-    return {
-        "latitude": obj.location.latitude,
-        "longitude": obj.location.longitude,
-    }
+from city.models import City, Place, PlaceRating, UserPlaceVisit, Location
 
 
 class PlaceSerializer(serializers.ModelSerializer):
@@ -37,8 +21,8 @@ class PlaceSerializer(serializers.ModelSerializer):
         validators=[FileExtensionValidator(["jpg", "jpeg", "png", "gif"])],
     )
 
-    user_rating = serializers.SerializerMethodField()
-    user_visited = serializers.SerializerMethodField()
+    # user_rating = serializers.SerializerMethodField()
+    # user_visited = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -49,14 +33,12 @@ class PlaceSerializer(serializers.ModelSerializer):
             "description",
             "city",
             "city_name",
-            "location",
             "location_details",
             "price",
             "photo",
             "average_rating",
             "total_ratings",
-            "user_rating",
-            "user_visited",
+            # "user_visited", DONT FORGET THIS
             "comments_count",
             "created_at",
             "updated_at",
@@ -66,21 +48,9 @@ class PlaceSerializer(serializers.ModelSerializer):
             "total_ratings",
             "created_at",
             "updated_at",
+            "location",
+
         ]
-
-    def get_user_rating(self, obj):
-        """
-        Get the current user's rating for this place
-        """
-        user = self.context.get("request").user
-        if not user.is_authenticated:
-            return None
-
-        try:
-            rating = PlaceRating.objects.get(user=user, place=obj)
-            return rating.rating
-        except PlaceRating.DoesNotExist:
-            return None
 
     def get_user_visited(self, obj):
         """
@@ -96,8 +66,8 @@ class PlaceSerializer(serializers.ModelSerializer):
         """
         Custom create method with additional processing
         """
-        city = validated_data.pop("city", None)
-        location = validated_data.pop("location", None)
+        city = validated_data.pop('city')
+        location = validated_data.pop('location')
 
         place = Place.objects.create(city=city, location=location, **validated_data)
 
@@ -116,6 +86,21 @@ class PlaceSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+    def get_comments_count(self, obj):
+        """
+        Get the total number of comments for this place
+        """
+        return obj.comments.count()
+
+    def get_location_details(self, obj):
+        """
+        Retrieve additional location information
+        """
+        return {
+            "lat": obj.location.lat,
+            "lng": obj.location.lng,
+        }
 
 
 class CitySerializer(serializers.ModelSerializer):

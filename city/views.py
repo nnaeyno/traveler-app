@@ -1,4 +1,6 @@
 from django.db.models import Count, Prefetch
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status
 from rest_framework.generics import ListAPIView, get_object_or_404
@@ -92,6 +94,7 @@ class ListPlacesView(ListAPIView):
         return Place.objects.filter(city_id=city_id).select_related("location")
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class PlaceView(APIView):
     permissions = [IsAuthenticated]
     serializer_class = PlaceSerializer
@@ -99,19 +102,10 @@ class PlaceView(APIView):
     def post(self, request):
         """
         Create a new place
-
-        Required fields in request:
-        - name
-        - city_id
-        - location_id
-        - price
-
-        Optional fields:
-        - description
-        - photo
         """
         data = request.data.copy()
-        required_fields = ["name", "city_id", "location_id", "price"]
+        print(data)
+        required_fields = ["name", "price"]
         for field in required_fields:
             if field not in data:
                 return Response(
@@ -120,8 +114,10 @@ class PlaceView(APIView):
                 )
 
         try:
-            city = get_object_or_404(City, id=data["city_id"])
-            location = get_object_or_404(Location, id=data["location_id"])
+            city = get_object_or_404(City, id=data["city"])
+            location, created = Location.objects.get_or_create(
+                lat=data['latitude'], lng=data['longitude']
+            )
             serializer = self.serializer_class(data=data)
 
             if serializer.is_valid():
