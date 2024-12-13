@@ -16,11 +16,27 @@
     window.addEventListener("map:init", function (e) {
         const detail = e.detail;
 
-        // Center map on user's current location
         navigator.geolocation.getCurrentPosition(position => {
             console.log(position)
             detail.map.setView([position.coords.latitude, position.coords.longitude], 15)
         })
+        const cityId = 2;
+        const apiUrl = `http://127.0.0.1:8000/api/cities/${cityId}/places/`;
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(place => {
+                    const marker = L.marker([place.location_details.lat, place.location_details.lng]).addTo(detail.map);
+                    marker.bindPopup(`
+                        <strong>${place.name}</strong><br/>
+                        Price: ${place.price}<br/>
+                        ${place.description ? place.description : ''}
+                    `);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching places:', error);
+            });
 
         // Add marker and popup on map click
         e.detail.map.on("click", c => {
@@ -54,6 +70,9 @@
 
             const marker = L.marker([lat, lng]).addTo(detail.map);
             marker.bindPopup(formHtml).openPopup();
+             marker.on("popupclose", function () {
+                detail.map.removeLayer(marker);
+            });
         })
     }, false);
 </script>

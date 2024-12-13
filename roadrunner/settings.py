@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     "user",
     "luggage",
     "city",
-    "city_frontend"
+    "map"
 ]
 
 MIDDLEWARE = [

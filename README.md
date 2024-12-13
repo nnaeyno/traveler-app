@@ -19,5 +19,4 @@ Notify users when someone:
 * Leaves a comment on their saved place.
 * Likes or follows them.
 
-
-pip install gdal
+install django-leaflet as well as gdal (brew install gdal pip install gdal)
