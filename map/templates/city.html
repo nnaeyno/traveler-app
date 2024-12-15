@@ -2,79 +2,277 @@
 <html lang="en">
 {% load static %}
 {% load leaflet_tags %}
+
 <head>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
 
     {% leaflet_js %}
     {% leaflet_css %}
 </head>
+
 <body>
-   {% leaflet_map "map" callback="window.map_init_basic" %}
+    <div class="map-navbar">
+        <svg id="anchor" width="475" height="188" viewBox="0 0 475 188" fill="none" xmlns="http://www.w3.org/2000/svg"
+            class="logo-eyes">
+            <path
+                d="M424 0H51C22.8335 0 0 22.8335 0 51V137C0 165.167 22.8335 188 51 188H424C452.167 188 475 165.167 475 137V51C475 22.8335 452.167 0 424 0Z"
+                fill="white" />
 
-<script>
-    window.addEventListener("map:init", function (e) {
-        const detail = e.detail;
+            <g>
 
-        navigator.geolocation.getCurrentPosition(position => {
-            console.log(position)
-            detail.map.setView([position.coords.latitude, position.coords.longitude], 15)
+                <path
+                    d="M99.362 121.02C111.475 121.02 121.295 104.745 121.295 84.6699C121.295 64.5945 111.475 48.3203 99.362 48.3203C87.2488 48.3203 77.4291 64.5945 77.4291 84.6699C77.4291 104.745 87.2488 121.02 99.362 121.02Z"
+                    fill="white" stroke="black" stroke-opacity="0.99" stroke-width="4.93277" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path
+                    d="M137.523 121.018C151.515 121.018 162.858 102.219 162.858 79.03C162.858 55.8407 151.515 37.042 137.523 37.042C123.531 37.042 112.188 55.8407 112.188 79.03C112.188 102.219 123.531 121.018 137.523 121.018Z"
+                    fill="white" stroke="black" stroke-opacity="0.99" stroke-width="4.93277" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </g>
+
+
+            <g id="eyes">
+
+                <path class="eye" id="left-eye"
+                    d="M110.102 77.9501C109.438 72.8701 107.903 68.42 105.768 65.39C103.633 62.36 101.035 60.94 98.43 61.38C95.825 61.82 93.382 64.0902 91.529 67.8002C89.676 71.5102 88.533 76.41 88.302 81.64C88.07 86.88 88.764 92.11 90.262 96.41C91.76 100.72 93.966 103.82 96.491 105.18C99.016 106.54 101.699 106.07 104.066 103.84C106.434 101.61 108.335 97.7801 109.435 93.0101L99.362 83.6202L110.102 77.9501Z"
+                    fill="black" />
+                <path class="eye" id="right-eye"
+                    d="M149.929 71.2699C149.162 65.3999 147.39 60.2599 144.923 56.7599C142.457 53.2599 139.455 51.6198 136.447 52.1298C133.438 52.6398 130.615 55.26 128.475 59.55C126.335 63.83 125.015 69.4899 124.748 75.5399C124.48 81.5799 125.282 87.62 127.012 92.6C128.743 97.57 131.29 101.16 134.207 102.73C137.124 104.3 140.222 103.75 142.957 101.18C145.692 98.5998 147.888 94.1798 149.159 88.6698L137.523 77.82L149.929 71.2699Z"
+                    fill="black" />
+            </g>
+
+            <path
+                d="M123.713 92.96C95.865 92.96 86.801 106.78 74.791 108.03C61.787 109.39 44.394 106.7 39.886 92.23C32.612 143.84 71.901 145.81 92.456 138.99C91.035 141.07 93.706 145.24 115.756 145.24C143.32 145.24 158.664 140.49 158.664 127.34C158.664 114.19 151.56 92.96 123.713 92.96Z"
+                fill="white" />
+            <path
+                d="M92.456 138.99C91.035 141.07 93.706 145.24 115.756 145.24C143.32 145.24 158.664 140.49 158.664 127.34C158.664 114.19 151.56 92.96 123.713 92.96C95.865 92.96 86.801 106.78 74.791 108.03C61.787 109.39 44.394 106.7 39.886 92.23C32.612 143.84 71.901 145.81 92.456 138.99ZM92.456 138.99C99.788 132.6 97.54 118.8 93.647 114.26M93.647 114.26C89.714 115.19 87.901 117.52 87.211 120.22M93.647 114.26C100.118 112.73 112.7 114.26 121.495 117.52"
+                stroke="white" stroke-width="4.93277" stroke-linecap="round" stroke-linejoin="round" />
+
+
+
+
+            <path
+                d="M123.713 98.6699C95.865 98.6699 86.801 112.5 74.791 113.75C61.787 115.11 44.394 112.41 39.886 97.95C32.612 149.56 71.901 151.53 92.456 144.71C91.035 146.79 93.706 150.96 115.756 150.96C143.32 150.96 158.664 146.21 158.664 133.06C158.664 119.91 151.56 98.6699 123.713 98.6699Z"
+                fill="#FFC665" />
+            <path
+                d="M92.456 144.71C91.035 146.79 93.706 150.96 115.756 150.96C143.32 150.96 158.664 146.21 158.664 133.06C158.664 119.91 151.56 98.6699 123.713 98.6699C95.865 98.6699 86.801 112.5 74.791 113.75C61.787 115.11 44.394 112.41 39.886 97.95C32.612 149.56 71.901 151.53 92.456 144.71ZM92.456 144.71C99.788 138.32 97.54 124.52 93.647 119.98M93.647 119.98C89.714 120.91 87.901 123.24 87.211 125.94M93.647 119.98C100.118 118.45 112.7 119.98 121.495 123.24"
+                stroke="#FF7F06" stroke-width="4.93277" stroke-linecap="round" stroke-linejoin="round" />
+            <path
+                d="M93.837 138.41C70.399 144.68 48.354 123.33 41.177 105.35C38.564 152.19 81.007 146.73 91.117 142.63C92.085 142.24 93.648 138.98 93.837 138.41Z"
+                fill="url(#paint0_linear_1_171)" />
+            <path
+                d="M135.223 147.38C148.831 142.48 152.609 125.52 152.782 117.6C156.32 125.24 156.878 132.98 155.595 136.88C152.623 145.91 135.223 147.58 135.223 147.38Z"
+                fill="url(#paint1_linear_1_171)" />
+            <path
+                d="M248.602 59.99C248.602 64.9 245.645 70.37 240.549 72.26C243.757 74.33 246.4 78.9899 248.602 82.3899C252.314 87.9199 253.949 86.5999 253.949 88.9299C253.949 89.4999 253.446 90 252.754 90H234.509C233.817 90 233.251 89.4999 233.251 88.9299C233.251 87.6699 236.271 87.4799 233.062 82.45L227.966 74.3999C226.456 74.3299 225.135 74.02 223.94 73.71V81.26C223.94 87.04 225.513 87.7399 225.513 88.9299C225.513 89.4999 224.946 90 224.254 90H210.791C210.225 90 209.596 89.4999 209.596 88.9299C209.596 87.7399 211.105 87.04 211.105 81.26V56.3401C211.105 50.6801 209.596 49.74 209.596 48.73C209.596 48.04 210.225 47.6599 210.791 47.6599H228.721C241.304 47.6599 248.602 52.25 248.602 59.99ZM234.824 62.1299C234.824 56.8399 231.993 52.32 227.715 52H227.211C225.701 52 223.94 53.7 223.94 55.27V66.79C223.94 68.48 227.148 69.99 228.407 69.99C232.118 69.99 234.824 67.3499 234.824 62.1299ZM270.11 58.54C279.86 58.54 286.91 65.7801 286.91 74.5901C286.91 83.3901 279.86 90.6299 270.11 90.6299C260.359 90.6299 253.312 83.3901 253.312 74.5901C253.312 65.7801 260.359 58.54 270.11 58.54ZM271.117 86.23C273.38 86.23 274.2 83.65 274.2 77.48C274.2 68.55 272.312 62.95 269.104 62.95C266.839 62.95 266.021 65.5299 266.021 71.6299C266.021 80.6299 267.908 86.23 271.117 86.23ZM289.05 81.95C289.05 74.27 299.62 71.82 308.11 68.8C308.55 66.28 307.93 62.7 304.91 62.7C302.07 62.7 299.87 64.6499 298.93 66.6599C297.92 68.6699 297.04 70.6201 294.21 70.6201C291.76 70.6201 290.5 68.9201 290.5 66.6001C290.5 62.5701 296.85 58.54 305.66 58.54C321.39 58.54 322.33 65.84 322.33 78.24C322.33 86.23 324.79 86.2901 324.79 87.8C324.79 89.25 323.65 90 321.2 90C316.98 90 313.71 87.7399 311.64 84.1499C308.87 88.6199 304.91 90.6299 300.06 90.6299C293.58 90.6299 289.05 86.9799 289.05 81.95ZM300.19 79.3C300.19 81.32 301.51 82.26 303.21 82.26C306.67 82.26 308.87 79.9301 308.87 75.0901C308.87 74.3301 308.87 73.5201 308.81 72.8201C304.47 75.3401 300.19 76.1 300.19 79.3ZM326.29 75.3401C326.29 64.8301 333.53 58.54 341.39 58.54C343.72 58.54 345.92 59.1099 347.68 59.9299V55.27C347.68 49.55 346.11 48.8499 346.11 47.6599C346.11 47.0899 346.61 46.5901 347.37 46.5901C354.92 46.5901 357.69 46.5901 358.94 46.5901C359.64 46.5901 360.2 47.0899 360.2 47.6599C360.2 48.7899 359.76 50.3 359.76 54.01L359.7 81.26C359.7 87.04 361.27 87.7399 361.27 88.9299C361.27 89.4999 360.71 90 360.01 90H348.94C348.25 90 347.68 89.4999 347.68 88.9299V85.8501C346.74 88.5501 343.22 90.6299 338.94 90.6299C331.58 90.6299 326.29 84.3401 326.29 75.3401ZM338.81 73.6399C338.81 80.1899 341.14 84.1499 344.16 84.1499C346.49 84.1499 347.49 82.2599 347.68 77.1699V63.77C347.18 63.7 346.68 63.5801 346.17 63.5801C341.83 63.5801 338.81 66.1599 338.81 73.6399ZM248.602 109.99C248.602 114.9 245.645 120.37 240.549 122.26C243.757 124.33 246.4 128.99 248.602 132.39C252.314 137.92 253.949 136.6 253.949 138.93C253.949 139.5 253.446 140 252.754 140H234.509C233.817 140 233.251 139.5 233.251 138.93C233.251 137.67 236.271 137.48 233.062 132.45L227.966 124.4C226.456 124.33 225.135 124.02 223.94 123.71V131.26C223.94 137.04 225.513 137.74 225.513 138.93C225.513 139.5 224.946 140 224.254 140H210.791C210.225 140 209.596 139.5 209.596 138.93C209.596 137.74 211.105 137.04 211.105 131.26V106.34C211.105 100.68 209.596 99.74 209.596 98.73C209.596 98.04 210.225 97.6599 210.791 97.6599H228.721C241.304 97.6599 248.602 102.25 248.602 109.99ZM234.824 112.13C234.824 106.84 231.993 102.32 227.715 102H227.211C225.701 102 223.94 103.7 223.94 105.27V116.79C223.94 118.48 227.148 119.99 228.407 119.99C232.118 119.99 234.824 117.35 234.824 112.13ZM255.464 116.53C255.464 110.81 253.891 111.37 253.891 110.18C253.891 109.61 254.394 109.11 255.149 109.11C262.699 109.11 265.467 109.17 266.725 109.17C267.417 109.17 267.983 109.68 267.983 110.24C267.983 111.44 267.543 110.87 267.543 116.66V131.19C267.543 133.21 268.801 134.15 270.5 134.15C272.828 134.15 275.22 131.63 275.22 128.61V116.53C275.22 110.81 274.02 111.37 274.02 110.18C274.02 109.61 274.53 109.11 275.22 109.11C282.77 109.11 285.91 109.17 287.11 109.17C287.8 109.17 288.37 109.68 288.37 110.24C288.37 111.44 287.3 110.87 287.3 116.66V132.58C287.3 138.24 288.87 137.8 288.87 138.93C288.87 139.5 288.3 140 287.61 140H276.48C275.78 140 275.22 139.5 275.22 138.93V135.78C273.08 138.62 270.374 140.63 265.97 140.63C259.931 140.63 255.464 136.85 255.464 131.95V116.53ZM314.77 108.54C320.74 108.54 325.4 112.7 325.4 118.99V132.58C325.59 138.24 326.91 137.8 326.91 138.93C326.91 139.5 326.34 140 325.65 140H313C312.31 140 311.81 139.5 311.81 138.93C311.81 137.74 313.32 138.3 313.32 132.51V120.62C313.32 117.41 311.75 115.9 310.3 115.9C307.28 115.9 305.2 122.7 305.01 131.32V132.51C305.01 138.3 306.52 137.74 306.52 138.93C306.52 139.5 306.02 140 305.33 140H292.68C291.99 140 291.42 139.5 291.42 138.93C291.42 137.74 292.93 137.04 292.93 131.26V118.48C292.93 112.76 291.42 111.44 291.42 110.24C291.42 109.68 291.93 109.17 292.62 109.17C300.17 109.17 302.94 109.17 304.2 109.17C304.89 109.17 305.45 109.68 305.45 110.24C305.45 111.31 305.2 111.56 305.01 114.39V114.9C307.22 110.87 310.68 108.54 314.77 108.54ZM352.75 108.54C358.73 108.54 363.38 112.7 363.38 118.99V132.58C363.57 138.24 364.89 137.8 364.89 138.93C364.89 139.5 364.33 140 363.64 140H350.99C350.3 140 349.79 139.5 349.79 138.93C349.79 137.74 351.3 138.3 351.3 132.51V120.62C351.3 117.41 349.73 115.9 348.28 115.9C345.26 115.9 343.19 122.7 343 131.32V132.51C343 138.3 344.51 137.74 344.51 138.93C344.51 139.5 344.01 140 343.31 140H330.67C329.98 140 329.41 139.5 329.41 138.93C329.41 137.74 330.92 137.04 330.92 131.26V118.48C330.92 112.76 329.41 111.44 329.41 110.24C329.41 109.68 329.91 109.17 330.61 109.17C338.16 109.17 340.92 109.17 342.18 109.17C342.87 109.17 343.44 109.68 343.44 110.24C343.44 111.31 343.19 111.56 343 114.39V114.9C345.2 110.87 348.66 108.54 352.75 108.54ZM383.57 108.54C391.62 108.54 397.91 113.39 397.91 119.49C397.91 128.36 387.34 130.06 380.67 127.86C381.99 131.13 384.45 133.52 388.79 133.52C396.34 133.52 395.33 126.66 398.54 126.66C399.61 126.66 400.49 127.54 400.49 128.74C400.49 131.51 395.83 140.63 384.19 140.63C374.32 140.63 367.21 133.96 367.21 124.59C367.21 115.4 374.19 108.54 383.57 108.54ZM383.44 112.32C380.67 112.32 379.48 115.21 379.48 120.5C379.48 121.76 379.54 123.14 379.73 124.4C383.44 123.89 386.84 121.5 386.84 117.16C386.84 113.95 385.64 112.32 383.44 112.32ZM424.62 108.54C427.95 108.54 430.72 111.44 430.72 115.15C430.72 119.11 427.83 122.07 424.56 122.07C421.03 122.07 419.9 118.92 417.76 118.92C416.5 118.92 415.62 120.18 415.62 124.59V131.32C415.62 136.98 417.13 137.8 417.13 138.93C417.13 139.5 416.63 140 415.94 140H403.29C402.6 140 402.03 139.5 402.03 138.93C402.03 137.74 403.54 137.04 403.54 131.26V116.6C403.54 110.87 402.03 111.44 402.03 110.24C402.03 109.68 402.54 109.17 403.23 109.17C410.78 109.17 413.55 109.17 414.81 109.17C415.5 109.17 416.06 109.68 416.06 110.24C416.06 111.31 415.62 112.19 415.62 115.02V115.84C417.45 112.51 420.66 108.54 424.62 108.54Z"
+                fill="black" />
+            <defs>
+                <linearGradient id="paint0_linear_1_171" x1="42.109" y1="107.07" x2="90.4649" y2="141.93"
+                    gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#DA9218" stop-opacity="0" />
+                    <stop offset="1" stop-color="#DA9218" />
+                </linearGradient>
+                <linearGradient id="paint1_linear_1_171" x1="152.974" y1="116.08" x2="162.12" y2="139.46"
+                    gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#DA9218" stop-opacity="0" />
+                    <stop offset="1" stop-color="#DA9218" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+
+
+        <div class="search-container">
+            <input type="text" placeholder="Search for a city!" class="map-city-search-input" />
+            <button type="button" class="map-button"> GO </button>
+        </div>
+
+        <div class="map-theme-toggle" id="toggle">
+            <div class="dark-toggle">
+                <i class="material-icons" style="color: white; transform: scale(0.8);">dark_mode</i>
+            </div>
+            <div class="light-toggle">
+                <i class="material-icons" style="color: white; transform: scale(0.8);">light_mode</i>
+            </div>
+        </div>
+    </div>
+    {% leaflet_map "map" callback="window.map_init_basic" %}
+
+
+
+    <script>
+
+        document.getElementById('toggle').addEventListener("click", (e) => {
+            const toggleElement = e.currentTarget; // Always refers to the #toggle element
+            if (!toggleElement.classList.contains('dark')) {
+                toggleElement.classList.add('dark');
+            } else {
+                toggleElement.classList.remove('dark');
+            }
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            const mouseX = e.clientX
+            const mouseY = e.clientY
+
+            const anchor = document.getElementById("anchor")
+
+            const rekt = anchor.getBoundingClientRect();
+            const anchorX = rekt.left + (rekt.width) / 2;
+            const anchorY = rekt.top + rekt.height / 2;
+
+
+
+            const angleDeg = angle(mouseX, mouseY, anchorX, anchorY)
+
+
+            const eyes = document.querySelectorAll(".eye")
+            eyes.forEach(eye => {
+                eye.style.transform = `rotate(${(angleDeg * 0.1)}deg)`;
+            })
+
         })
-        const cityId = 2;
-        const apiUrl = `http://127.0.0.1:8000/api/cities/${cityId}/places/`;
-        fetch(apiUrl)
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(place => {
-                    const marker = L.marker([place.location_details.lat, place.location_details.lng]).addTo(detail.map);
-                    marker.bindPopup(`
+
+        function angle(cx, cy, ex, ey) {
+            const dy = ey - cy;
+            const dx = ex - cx;
+            const rad = Math.atan2(dy, dx);
+            const deg = rad * 100 / Math.PI;
+            return deg;
+        }
+
+        window.addEventListener("map:init", function (e) {
+            const detail = e.detail;
+
+            const lightTheme = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors &copy; CartoDB',
+                subdomains: 'abcd',
+                maxZoom: 19,
+            })
+
+            const darkTheme = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors &copy; CartoDB',
+                subdomains: 'abcd',
+                maxZoom: 19,
+            });
+
+            const voyagerTheme = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors &copy; CartoDB',
+                subdomains: 'abcd',
+                maxZoom: 19,
+            }).addTo(detail.map);
+
+            const satelliteTheme = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+                maxZoom: 18,
+            });
+
+            const baseMaps = {
+                "Light Theme": lightTheme,
+                "Dark Theme": darkTheme,
+                "Voyager Theme": voyagerTheme,
+                "Satellite": satelliteTheme,
+            };
+
+            L.control.layers(baseMaps).addTo(e.detail.map);
+
+            navigator.geolocation.getCurrentPosition(position => {
+                console.log(position)
+                detail.map.setView([position.coords.latitude, position.coords.longitude], 15)
+            })
+            const cityId = 2;
+            const apiUrl = `http://127.0.0.1:8000/api/cities/${cityId}/places/`;
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(place => {
+                        const marker = L.marker([place.location_details.lat, place.location_details.lng]).addTo(detail.map);
+                        marker.bindPopup(`
                         <strong>${place.name}</strong><br/>
                         Price: ${place.price}<br/>
                         ${place.description ? place.description : ''}
                     `);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching places:', error);
                 });
-            })
-            .catch(error => {
-                console.error('Error fetching places:', error);
-            });
 
-        // Add marker and popup on map click
-        e.detail.map.on("click", c => {
-            const lat = c.latlng.lat;
-            const lng = c.latlng.lng;
+                const customIcon = L.icon({
+            iconUrl: "{% static 'map-pin.svg' %}", // Django static tag
+            iconSize: [32, 32], // Size of the icon
+            iconAnchor: [16, 32], // Anchor point of the icon (center bottom)
+            popupAnchor: [0, -32], // Where the popup opens relative to the icon
+        });
 
-            const formHtml = `
-                <form method="post" action="/api/places/" enctype="multipart/form-data">
+
+            e.detail.map.on("click", c => {
+                const lat = c.latlng.lat;
+                const lng = c.latlng.lng;
+
+                const formHtml = `
+                <form method="post" action="/api/places/" enctype="multipart/form-data" class="map-marker-popup">
                     {% csrf_token %}
-                    <label for="id_name">Name:</label>
-                    <input type="text" id="id_name" name="name" required/><br/>
 
-                    <label for="id_city">City ID:</label>
-                    <input type="number" id="id_city" name="city" required/><br/>
+                    <input class="map-city-search-input" type="text" id="id_name" name="name" required placeholder="name"/>
 
-                    <label for="id_price">Price:</label>
-                    <input type="number" id="id_price" name="price" required/><br/>
 
-                    <label for="id_description">Description:</label>
-                    <textarea id="id_description" name="description"></textarea><br/>
+                    <input class="map-city-search-input"  type="number" id="id_city" name="city" required placeholder="city"/>
 
-                    <label for="id_photo">Photo:</label>
-                    <input type="file" id="id_photo" name="photo" accept="image/*"/><br/>
+
+                    <input class="map-city-search-input" type="number" id="id_price" name="price" required placeholder="price"/>
+
+
+                    <textarea class="map-city-search-input" id="id_description" name="description" placeholder="description"></textarea>
+
+
+
+                    <div class="custom-file-upload">
+                        <label class="file-name" for="id_photo">Upload Photo</label>
+                        <input  type="file" id="id_photo" name="photo" accept="image/*"/>
+
+                    </div>
 
                     <input type="hidden" name="latitude" value="${lat}" />
                     <input type="hidden" name="longitude" value="${lng}" />
 
-                    <button type="submit">Save Place</button>
+                    <button type="submit" class="save-place-button">Save Place</button>
                 </form>
             `;
 
-            const marker = L.marker([lat, lng]).addTo(detail.map);
-            marker.bindPopup(formHtml).openPopup();
-             marker.on("popupclose", function () {
-                detail.map.removeLayer(marker);
-            });
-        })
-    }, false);
-</script>
+                const marker = L.marker([lat, lng], { icon: customIcon }).addTo(detail.map);
+                marker.bindPopup(formHtml).openPopup();
+
+
+                document.addEventListener('change', function (e) {
+                    if (e.target && e.target.id === 'id_photo') {
+                        const fileNameSpan = e.target.closest('.custom-file-upload').querySelector('.file-name');
+                        const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+                        fileNameSpan.textContent = fileName;
+                    }
+                });
+
+
+                marker.on("popupclose", function () {
+                    detail.map.removeLayer(marker);
+                });
+
+
+
+            })
+
+        }, false);
+
+
+    </script>
 </body>
+
 </html>

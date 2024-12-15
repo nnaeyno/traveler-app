@@ -1,3 +1,169 @@
+* {
+    font-family: "Poppins"
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
 .leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
     height: 100vh;
+
 }
+
+.map-navbar {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translate(-50%);
+    z-index: 9999;
+    background: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    width: 500px;
+
+
+
+    border-radius: 25px;
+}
+
+.map-logo-image {
+    width: 150px;
+    height: auto;
+}
+
+.logo-eyes {
+    width: 150px;
+    height: auto;
+}
+
+.map-logo-eye-right,
+.map-logo-eye-left {
+    position: absolute;
+    width: 10px;
+    height: auto;
+}
+
+
+
+.map-city-search-input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #F4F4F4;
+    width: 200px;
+    resize: none;
+}
+
+.search-container {
+    display: flex;
+    gap: 10px;
+}
+
+.map-button, .save-place-button {
+    background: none;
+    border: none;
+    width: 50px;
+    height: 50px;
+    box-shadow: 0px 0px 4.7px 0px rgba(0, 0, 0, 0.15);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.save-place-button {
+    width: 100%;
+    color: #3b3b3b;
+}
+
+.save-place-button:hover {
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
+
+}
+
+
+.map-button:hover {
+    box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.15);
+}
+
+
+.eye {
+    transform-origin: 60% 40%;
+}
+
+.map-theme-toggle {
+    width: 60px;
+    height: 30px;
+    border: 1px solid black;
+    border-radius: 50px;
+    position: relative;
+    cursor: pointer;
+}
+
+.dark-toggle, .light-toggle {
+    background: black;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+}
+
+.light-toggle {
+    right: 0;
+    left: initial;
+    display: none;
+}
+
+
+.map-theme-toggle.dark .dark-toggle {
+    display: none;
+}
+
+.map-theme-toggle.dark .light-toggle {
+    display: flex;
+}
+
+.map-marker-popup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.custom-file-upload input[type="file"] {
+    display: none;
+  }
+  
+
+  .custom-file-upload label {
+    display: inline-block;
+    padding: 10px 20px;
+    color: white;
+    background-color: #FFC665;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+    transition: background-color 0.3s;
+  }
+  
+
+  .custom-file-upload label:hover {
+    background-color: #FF7F06;
+  }
+  
+
+  .custom-file-upload label:active {
+    background-color: #FF7F06;
+  }
+  
+
+
+  
