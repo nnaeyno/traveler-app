@@ -90,11 +90,12 @@
 
 
 
-        <div class="search-container">
-            <input type="text" placeholder="Search for a city!" class="map-city-search-input" />
-            <button type="button" class="map-button"> GO </button>
+          <div class="search-container">
+             <form method="get" id="city-search-form">
+            {{ form.city }}
+            <button type="button" id="fetch-places-button" class="map-button">GO</button>
+        </form>
         </div>
-
         <div class="map-theme-toggle" id="toggle">
             <div class="dark-toggle">
                 <i class="material-icons" style="color: white; transform: scale(0.8);">dark_mode</i>
@@ -188,25 +189,42 @@
                 console.log(position)
                 detail.map.setView([position.coords.latitude, position.coords.longitude], 15)
             })
-            const cityId = 2;
+            document.getElementById("fetch-places-button").addEventListener("click", () => {
+            const cityDropdown = document.getElementById("id_city");
+            const cityId = cityDropdown.value;
+
+            if (!cityId) {
+                alert("Please select a city!");
+                return;
+            }
+
             const apiUrl = `http://127.0.0.1:8000/api/cities/${cityId}/places/`;
+
             fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
+                    // Clear existing markers
+                    detail.map.eachLayer(layer => {
+                        if (layer instanceof L.Marker) {
+                            detail.map.removeLayer(layer);
+                        }
+                    });
+
                     data.forEach(place => {
                         const marker = L.marker([place.location_details.lat, place.location_details.lng]).addTo(detail.map);
                         marker.bindPopup(`
-                        <strong>${place.name}</strong><br/>
-                        Price: ${place.price}<br/>
-                        ${place.description ? place.description : ''}
-                    `);
+                            <strong>${place.name}</strong><br/>
+                            Price: ${place.price}<br/>
+                            ${place.description ? place.description : ''}
+                        `);
                     });
                 })
                 .catch(error => {
                     console.error('Error fetching places:', error);
                 });
+        });
 
-                const customIcon = L.icon({
+            const customIcon = L.icon({
             iconUrl: "{% static 'map-pin.svg' %}", // Django static tag
             iconSize: [32, 32], // Size of the icon
             iconAnchor: [16, 32], // Anchor point of the icon (center bottom)
@@ -217,22 +235,23 @@
             e.detail.map.on("click", c => {
                 const lat = c.latlng.lat;
                 const lng = c.latlng.lng;
+                const cityDropdown = document.getElementById("id_city");
+                const cityId = cityDropdown.value;
 
                 const formHtml = `
-                <form method="post" action="/api/places/" enctype="multipart/form-data" class="map-marker-popup">
+                <form method="post" action="/city/place/" enctype="multipart/form-data" class="map-marker-popup" id="add-place">
                     {% csrf_token %}
 
                     <input class="map-city-search-input" type="text" id="id_name" name="name" required placeholder="name"/>
 
 
-                    <input class="map-city-search-input"  type="number" id="id_city" name="city" required placeholder="city"/>
+<!--                    <input class="map-city-search-input"  type="number" id="id_city" name="city" required placeholder="city"/>-->
 
 
                     <input class="map-city-search-input" type="number" id="id_price" name="price" required placeholder="price"/>
 
 
                     <textarea class="map-city-search-input" id="id_description" name="description" placeholder="description"></textarea>
-
 
 
                     <div class="custom-file-upload">
@@ -243,6 +262,7 @@
 
                     <input type="hidden" name="latitude" value="${lat}" />
                     <input type="hidden" name="longitude" value="${lng}" />
+                    <input type="hidden" name="city" value="${cityId}" />
 
                     <button type="submit" class="save-place-button">Save Place</button>
                 </form>

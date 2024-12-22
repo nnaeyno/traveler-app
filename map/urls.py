@@ -1,8 +1,10 @@
 from django.urls import path
 
-from . import views
-from .views import MapView
+from .views import MapView, PlaceView
+
+app_name = "traveler"
 
 urlpatterns = [
-    path("map/", MapView.as_view(), name="map-page"),
+    path("map/", MapView.as_view(), name="map"),
+    path("place/", PlaceView.as_view(), name="place"),
 ]

@@ -23,12 +23,10 @@ install django-leaflet as well as gdal (brew install gdal pip install gdal)
 
 # TO DO
 
-1. [ ] dynamic city id (first page where user chooses city)
-2. [ ] login/register pages
-3. [ ] refresh after adding place
-4. [ ] comments and ratings for a place
-5. [ ] display better page for a place
-6. [ ] notifications
-7. [ ] django web component
-8. [ ] luggage app 
+1. login/register pages (in progress)
+2. refresh after adding place --> redirect to place page (in progress, need front)
+3. comments and ratings for a place
+4. notifications (in progress)
+5. django web component
+6. luggage app 
 

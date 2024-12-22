@@ -94,7 +94,7 @@ class ListPlacesView(ListAPIView):
         return Place.objects.filter(city_id=city_id).select_related("location")
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name="dispatch")
 class PlaceView(APIView):
     permissions = [IsAuthenticated]
     serializer_class = PlaceSerializer
@@ -116,7 +116,7 @@ class PlaceView(APIView):
         try:
             city = get_object_or_404(City, id=data["city"])
             location, created = Location.objects.get_or_create(
-                lat=data['latitude'], lng=data['longitude']
+                lat=data["latitude"], lng=data["longitude"]
             )
             serializer = self.serializer_class(data=data)
 
@@ -193,3 +193,6 @@ class PlaceView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, place_id):  # mark as visited here
+        pass

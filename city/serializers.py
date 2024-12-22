@@ -2,7 +2,7 @@ from django.core.validators import FileExtensionValidator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from city.models import City, Place, PlaceRating, UserPlaceVisit, Location
+from city.models import City, Location, Place, PlaceRating, UserPlaceVisit
 
 
 class PlaceSerializer(serializers.ModelSerializer):
@@ -49,7 +49,6 @@ class PlaceSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "location",
-
         ]
 
     def get_user_visited(self, obj):
@@ -66,8 +65,8 @@ class PlaceSerializer(serializers.ModelSerializer):
         """
         Custom create method with additional processing
         """
-        city = validated_data.pop('city')
-        location = validated_data.pop('location')
+        city = validated_data.pop("city")
+        location = validated_data.pop("location")
 
         place = Place.objects.create(city=city, location=location, **validated_data)
 

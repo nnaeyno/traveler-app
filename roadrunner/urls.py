@@ -26,5 +26,5 @@ urlpatterns = [
     path("api/", include("user.urls")),
     # path('api/', include('luggage.urls')),
     path("api/", include("city.urls")),
-    path("city/", include("map.urls")),
+    path("", include("map.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

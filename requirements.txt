@@ -2,3 +2,5 @@ Django~=5.1.2
 djangorestframework~=3.15.2
 pillow
 django-filter~=24.3
+requests~=2.32.3
+celery~=5.4.0
