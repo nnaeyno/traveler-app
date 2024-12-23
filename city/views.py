@@ -7,8 +7,8 @@ from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from city.models import City, Location, Place, PlaceRating, UserPlaceVisit
+from city.tasks import send_notification_email, create_comment_notification
+from city.models import City, Location, Place, UserPlaceVisit
 
 from .serializers import CitySerializer, PlaceSerializer, PlaceCommentSerializer, PlaceRatingSerializer
 
@@ -67,6 +67,7 @@ class CityView(APIView):
 class CommentView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = PlaceCommentSerializer
+    notifications = create_comment_notification
 
     def post(self, request, place_id):
         """
@@ -74,11 +75,21 @@ class CommentView(APIView):
         """
         place = get_object_or_404(Place, id=place_id)
         data = request.data.copy()
-        data['user'] = request.user.id
+        user = request.user
+        data['user'] = user.id
         data['place'] = place.id
         serializer = self.serializer_class(data=data, context={"request": request})
         if serializer.is_valid():
-            serializer.save()
+            comment = serializer.save()
+            place = comment.place
+            place_creator = place.user
+
+            create_comment_notification.delay(
+                recipient_id=place_creator.id,
+                sender_id=user.id,
+                place_name=place.name,
+                comment_text=comment.text
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -257,4 +268,3 @@ class PlaceView(APIView):
             },
             status=status.HTTP_200_OK,
         )
-

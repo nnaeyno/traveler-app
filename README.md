@@ -27,8 +27,7 @@ install django-leaflet as well as gdal (brew install gdal pip install gdal)
 2. refresh after adding place --> redirect to place page (in progress, need front)
 3. notifications (in progress)
 4. django web component
-5. luggage app 
-6. mark as visited
-7. swagger
-8. write readme
+5. luggage app
+6. swagger
+7. write readme
 

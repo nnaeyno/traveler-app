@@ -152,12 +152,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
-# set the celery broker url
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-
-# set the celery result backend
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-
-# set the celery timezone
-CELERY_TIMEZONE = 'UTC'
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = "EMAIL"  # Replace with your email address
+EMAIL_HOST_PASSWORD = "APP_PASSWORD"  # Replace with your email password
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

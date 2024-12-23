@@ -43,6 +43,11 @@ class Place(models.Model):
         blank=True,
         validators=[FileExtensionValidator(["jpg", "jpeg", "png", "gif"])],
     )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="place_creator",
+    )
 
     # Aggregated Rating Fields
     total_ratings = models.PositiveIntegerField(default=0)
@@ -135,3 +140,4 @@ class UserPlaceVisit(models.Model):
         Convenience method to mark a place as visited
         """
         return cls.objects.get_or_create(user=user, place=place)
+
