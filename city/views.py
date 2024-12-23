@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from city.models import City, Location, Place, PlaceRating
+from city.models import City, Location, Place, PlaceRating, UserPlaceVisit
 
 from .serializers import CitySerializer, PlaceSerializer, PlaceCommentSerializer, PlaceRatingSerializer
 
@@ -138,6 +138,7 @@ class ListPlacesView(ListAPIView):
 class PlaceView(APIView):
     permissions = [IsAuthenticated]
     serializer_class = PlaceSerializer
+    visited_class = UserPlaceVisit
 
     def post(self, request):
         """
@@ -234,5 +235,26 @@ class PlaceView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, place_id):  # mark as visited here
-        pass
+    def patch(self, request, place_id):
+        """
+        Mark a place as visited for the authenticated user.
+        """
+        place = get_object_or_404(Place, id=place_id)
+
+        notes = request.data.get('notes', '')
+
+        visit, created = self.visited_class.mark_as_visited(user=request.user, place=place)
+
+        if not created:
+            visit.notes = notes or visit.notes
+            visit.save()
+
+        return Response(
+            {
+                "detail": f"Place '{place.name}' marked as visited.",
+                "visited_at": visit.visited_at,
+                "notes": visit.notes,
+            },
+            status=status.HTTP_200_OK,
+        )
+
