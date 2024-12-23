@@ -45,15 +45,7 @@ class MapView(TemplateView):
     city_search_form = CitySearchForm
 
     def get(self, request, *args, **kwargs):
-        cities = request.user.cities.annotate(places_count=Count("places"))
-
-        city_choices = [
-            (city.id, f"{city.name} ({city.places_count} places)") for city in cities
-        ]
-
-        form = self.city_search_form()
-        form.fields["city"].choices = city_choices
-
+        form = self.city_search_form(user=request.user)
         return self.render_to_response({"form": form})
 
 
@@ -68,10 +60,3 @@ def add_location(request):
 
     return render(request, "city.html", {"form": form})
 
-
-class Login(TemplateView):
-    template_name = "login.html"
-
-
-class SignUp(TemplateView):
-    template_name = "signup.html"
