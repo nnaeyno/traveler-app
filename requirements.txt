@@ -4,4 +4,5 @@ pillow
 django-filter~=24.3
 requests~=2.32.3
 celery~=5.4.0
+drf-yasg
 twilio~=9.4.1

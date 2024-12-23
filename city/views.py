@@ -67,7 +67,7 @@ class CityView(APIView):
 class CommentView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = PlaceCommentSerializer
-    notifications = create_comment_notification
+    notifications = create_comment_notification  # Can just change this and send to email or phone number
 
     def post(self, request, place_id):
         """
@@ -84,7 +84,7 @@ class CommentView(APIView):
             place = comment.place
             place_creator = place.user
 
-            create_comment_notification.delay(
+            self.notifications.delay(
                 recipient_id=place_creator.id,
                 sender_id=user.id,
                 place_name=place.name,

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    "drf_yasg",
     "django_filters",
     "celery",
     "leaflet",
@@ -163,3 +164,15 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = "EMAIL"  # Replace with your email address
 EMAIL_HOST_PASSWORD = "APP_PASSWORD"  # Replace with your email password
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'USE_SESSION_AUTH': False,
+}
