@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,22 +12,11 @@
         href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
     <title>Document</title>
 </head>
 
 <body>
-    <div class="login-navbar">
-        <img src="logo_light.svg" alt="" class="login-logo">
-        <div class="map-theme-toggle" id="toggle">
-            <div class="dark-toggle">
-                <i class="material-icons" style="color: white; transform: scale(0.8);">dark_mode</i>
-            </div>
-            <div class="light-toggle">
-                <i class="material-icons" style="color: white; transform: scale(0.8);">light_mode</i>
-            </div>
-        </div>
-    </div>
 
     <div class="login-form">
         <div class="login-header">
