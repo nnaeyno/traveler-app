@@ -11,7 +11,8 @@ install django-leaflet as well as gdal (brew install gdal pip install gdal)
 # TO DO
 
 1. login/register pages (in progress)
-2. refresh after adding place --> redirect to place page (in progress, need front)
+2. add back to front
 3. luggage app
 4. write readme
+5. cache
 
