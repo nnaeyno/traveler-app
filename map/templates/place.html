@@ -1,10 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/place.css">
+    <title>Place</title>
 </head>
+
 <body>
+    <div class="place-navbar">
+        <img src="logo_light.svg" alt="" class="place-logo">
+        <div class="map-theme-toggle" id="toggle">
+            <div class="dark-toggle">
+                <i class="material-icons" style="color: white; transform: scale(0.8);">dark_mode</i>
+            </div>
+            <div class="light-toggle">
+                <i class="material-icons" style="color: white; transform: scale(0.8);">light_mode</i>
+            </div>
+        </div>
+    </div>
+
+    <div class="place-container">
+
+        <div class="left-container">
+            <div class="place-name">Cafe Daphna</div>
+            <div class="place-address">
+                29 George Atoneli street
+            </div>
+            <div class="place-price">
+                <span class="place-price-person">20$</span> / Person
+            </div>
+            <div class="ratings">
+                <div class="rating active"></div>
+                <div class="rating active"></div>
+                <div class="rating active"></div>
+                <div class="rating active"></div>
+                <div class="rating"></div>
+            </div>
+
+            <p>
+                Vibes: დაფნა ჩემთვის ის რესტორანია, სადაც საღამოს მეგობრებთან ერთად მიდიხარ, როცა უკვე საკმაოდ ბევრი
+                დალიე და ის 5 ხინკალი გჭირდება, რომ საღამო დაასრულო. პრობლემაა ხშირად მაგიდის შოვნაზე (ღამის 3 საათზეც
+                კი), რადგან ყოველთვის ძალიან ბევრი ხალხია. თუმცა, რადგან დილის 6 საათამდე ღიაა, ჩემი აზრით, მსოფლიოს
+                შვიდ საოცრებაშია შესატანი – გიზას პირამიდას 4:30-ზე კეტავენ, დაფნას კი არა.Food: დაფნაზე რომ ვსაუბრობთ,
+                ალბათ, პირველ რიგში ხინკალია გასაჯაჯი. სამწუხაროდ, ბოლო პერიოდში ისეთი კარგი აღარ არის, როგორც ადრე იყო,
+                თუმცა მაინც ძალიან გემრიელია. ყოველთვის რაღაც აკლია, რომ იმ მათემატიკურად იდეალურ ხინკალამდე მივიდეს,
+                რომელსაც დავინჩი ოქროს კვეთაში ჩასვამდა იმ ტიტველი კაცის ნაცვლად. ან საკმარისად ბევრი წვენი არ აქვს, ან
+                კუჭები ზედმეტად დიდია. მაგრამ ამ ყველაფრის მიუხედავად, უგემრიელესი ხინკალია, თუმცა იდეალური – არა. საიდ
+                დიშებთან დაკავშირებით, უმეტესად საკმაოდ გემრიელია ხოლმე. ხემსის დაფას ვიღებთ ხოლმე მეგობრები და არასოდეს
+                უკმაყოფილოები არ ვრჩებით (ჩასწორება: პური მოდის ცოტა ხემსის დაფასთან)Interior: ინტერიერზე ბევრი არაფერი
+                მაქვს სათქმელი – თავის საქმეს აკეთებს, თუმცა რამე საინტერესო დეკორაციები ან ისეთი დეტალები, რაც
+                დაგამახსოვრდება, დიდად არ აქვს.Restroom: ალბათ, ტოკიოს ყველაზე გადატვირთულ მატარებელშიც კი ისე არ
+                მოგიწევს თბილისის სხვა მცხოვრებლებთან მიჭყლეტვა, როგორც დაფნას საპირფარეშოს შესასვლელში. სივრცე საკმაოდ
+                ვიწროა, და მიუხედავად იმისა, რამდენადაც სასიამოვნო არ უნდა იყოს თანამემამულე ქართველთან სანუგეშო
+                ჩახუტება, სანამ გადააფსავ, მაინც მირჩევნია, დისტანცია დავიცვა. სხვა ასპექტებს რაც შეეხება, არაფერი
+                განსაკუთრებული – ყველაზე ჩვეულებრივი საპირფარეშოა, რაც დედამიწაზე შეიძლება იყოს. თუ ადამიანი იქნებოდა,
+                ალბათ, გიორგი ერქმეოდა – იმდენად ბეისიქია.
+            </p>
+        </div>
+
+        <div class="right-container">
+            <div class="place-image"
+                style="background-image: url(https://lh3.googleusercontent.com/p/AF1QipN_RGpNttbmq6HUmdUt558RdG6KPcKnS95tQ4Qk=s1360-w1360-h1020);">
+            </div>
+
+
+            <div class="comment-input-container">
+                <img class="comment-input-profile-image"
+                    src="https://d7hftxdivxxvm.cloudfront.net/?height=640&quality=80&resize_to=fit&src=https://d32dm0rphc51dk.cloudfront.net/4LhLBpxNplkHEW_Fn-2d7g/large.jpg&width=461"
+                    alt="">
+                <input class="comment-input" type="text">
+            </div>
+
+
+            <div class="comments">
+                <div class="comment">
+                    <div class="comment-profile-container">
+                        <img class="comment-input-profile-image"
+                            src="https://d7hftxdivxxvm.cloudfront.net/?height=640&quality=80&resize_to=fit&src=https://d32dm0rphc51dk.cloudfront.net/4LhLBpxNplkHEW_Fn-2d7g/large.jpg&width=461"
+                            alt="">
+                           
+
+                        <div class="comment-name">
+                            Nino
+                        </div>
+                    </div>
+                    <div class="comment-profile-seperator">
+                    </div>
+
+                    <div class="comment-text">
+                        Nice place pretty chill!
+                    </div>
+                </div>
+
+
+                <div class="comment">
+                    <div class="comment-profile-container">
+                        <img class="comment-input-profile-image"
+                            src="https://d7hftxdivxxvm.cloudfront.net/?height=640&quality=80&resize_to=fit&src=https://d32dm0rphc51dk.cloudfront.net/4LhLBpxNplkHEW_Fn-2d7g/large.jpg&width=461"
+                            alt="">
+                           
+
+                        <div class="comment-name">
+                            Nino
+                        </div>
+                    </div>
+                    <div class="comment-profile-seperator">
+                    </div>
+
+                    <div class="comment-text">
+                        Nice place pretty chill!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
+
 </html>

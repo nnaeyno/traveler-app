@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="login.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="login-navbar">
+        <img src="logo_light.svg" alt="" class="login-logo">
+        <div class="map-theme-toggle" id="toggle">
+            <div class="dark-toggle">
+                <i class="material-icons" style="color: white; transform: scale(0.8);">dark_mode</i>
+            </div>
+            <div class="light-toggle">
+                <i class="material-icons" style="color: white; transform: scale(0.8);">light_mode</i>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-form">
+        <div class="login-header">
+            Sign in to your account
+        </div>
+
+        <div class="login-form-inputs">
+            <input type="text" name="" id="" class="login-form-input" placeholder="Username">
+            <input type="text" name="" id="" class="login-form-input" placeholder="email">
+            <input type="password" name="" id="" class="login-form-input" placeholder="Password">
+            <div class="file-input-wrapper">
+                <label for="file-upload" class="file-input-label">Upload Profile Photo</label>
+                <input type="file" name="file" id="file-upload" class="login-form-input" accept="image/*" onchange="handleFileUpload(event)">
+            </div>
+            
+            <div id="file-preview-container" class="file-preview-container" style="display: none;">
+                <img id="file-preview-image" class="file-preview-image" src="" alt="Preview" style="display: none;">
+                <p id="file-preview-text" class="file-preview-text">No file selected</p>
+                <button type="button" id="edit-file-button" class="file-edit-button" onclick="editFile()">Edit</button>
+            </div>
+        </div>
+
+        <div class="login-form-buttons">
+            <button class="login-form-button">Register</button>
+        </div>
+
+    </div>
+
+    <ul class="social-icons">
+        <li>
+            <a href="https://www.facebook.com" target="_blank" aria-label="Facebook">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.twitter.com" target="_blank" aria-label="Twitter">
+                <i class="fab fa-twitter"></i>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.instagram.com" target="_blank" aria-label="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.linkedin.com" target="_blank" aria-label="LinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.youtube.com" target="_blank" aria-label="YouTube">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </li>
+    </ul>
+
+    <script>
+       function handleFileUpload(event) {
+    const fileInput = event.target;
+    const file = fileInput.files[0];
+
+    const filePreviewContainer = document.getElementById("file-preview-container");
+    const filePreviewText = document.getElementById("file-preview-text");
+    const filePreviewImage = document.getElementById("file-preview-image");
+
+    if (file) {
+        const fileReader = new FileReader();
+
+        fileReader.onload = function (e) {
+            filePreviewImage.src = e.target.result;
+            filePreviewImage.style.display = "block";
+
+            filePreviewText.style.display = "none";
+        };
+
+        if (file.type.startsWith("image/")) {
+            fileReader.readAsDataURL(file);
+        } else {
+            filePreviewText.textContent = `Selected file: ${file.name}`;
+            filePreviewText.style.display = "block";
+
+            filePreviewImage.style.display = "none";
+        }
+        filePreviewContainer.style.display = "flex";
+    }
+}
+
+function editFile() {
+    const fileInput = document.getElementById("file-upload");
+    fileInput.click(); 
+}
+
+    </script>
+</body>
+
+</html>

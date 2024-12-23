@@ -71,3 +71,7 @@ def add_location(request):
 
 class Login(TemplateView):
     template_name = "login.html"
+
+
+class SignUp(TemplateView):
+    template_name = "signup.html"
