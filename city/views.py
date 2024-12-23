@@ -7,12 +7,18 @@ from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from city.tasks import send_notification_email, create_comment_notification
+
 from city.models import City, Location, Place, UserPlaceVisit
+from city.tasks import create_comment_notification, send_notification_email
 from user.models import User
 
-from .serializers import CitySerializer, PlaceSerializer, PlaceCommentSerializer, PlaceRatingSerializer, \
-    CreatePlaceSerializer
+from .serializers import (
+    CitySerializer,
+    CreatePlaceSerializer,
+    PlaceCommentSerializer,
+    PlaceRatingSerializer,
+    PlaceSerializer,
+)
 
 
 class CityView(APIView):
@@ -78,10 +84,10 @@ class CommentView(APIView):
         place = get_object_or_404(Place, id=place_id)
         data = request.data.copy()
         user = request.user
-        data['user'] = user.id
-        data['place'] = place.id
+        data["user"] = user.id
+        data["place"] = place.id
         recipients = User.objects.filter(cities__places__id=place_id)
-        recipient_ids = list(recipients.values_list('id', flat=True))
+        recipient_ids = list(recipients.values_list("id", flat=True))
         serializer = self.serializer_class(data=data, context={"request": request})
         if serializer.is_valid():
             comment = serializer.save()
@@ -91,7 +97,7 @@ class CommentView(APIView):
                 recipients=recipient_ids,
                 sender_id=user.id,
                 place_name=place.name,
-                comment_text=comment.text
+                comment_text=comment.text,
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -101,6 +107,7 @@ class PlaceRatingView(APIView):
     """
     API endpoint for adding or updating a user's rating for a place
     """
+
     permission_classes = [IsAuthenticated]
     serializer_class = PlaceRatingSerializer
 
@@ -111,8 +118,8 @@ class PlaceRatingView(APIView):
         place = get_object_or_404(Place, id=place_id)
 
         data = request.data.copy()
-        data['user'] = request.user.id
-        data['place'] = place.id
+        data["user"] = request.user.id
+        data["place"] = place.id
 
         serializer = self.serializer_class(data=data, context={"request": request})
         if serializer.is_valid():
@@ -160,7 +167,7 @@ class PlaceView(APIView):
         Create a new place
         """
         data = request.data.copy()
-        data['user'] = request.user.id
+        data["user"] = request.user.id
         required_fields = ["name", "price"]
         for field in required_fields:
             if field not in data:
@@ -174,13 +181,16 @@ class PlaceView(APIView):
             location, created = Location.objects.get_or_create(
                 lat=data["latitude"], lng=data["longitude"]
             )
-            serializer = self.create_serializer_class(data=data, context={"request": request})
+            serializer = self.create_serializer_class(
+                data=data, context={"request": request}
+            )
 
             if serializer.is_valid():
                 place = serializer.save(city=city, location=location)
 
                 return Response(
-                    self.create_serializer_class(place).data, status=status.HTTP_201_CREATED
+                    self.create_serializer_class(place).data,
+                    status=status.HTTP_201_CREATED,
                 )
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -256,9 +266,11 @@ class PlaceView(APIView):
         """
         place = get_object_or_404(Place, id=place_id)
 
-        notes = request.data.get('notes', '')
+        notes = request.data.get("notes", "")
 
-        visit, created = self.visited_class.mark_as_visited(user=request.user, place=place)
+        visit, created = self.visited_class.mark_as_visited(
+            user=request.user, place=place
+        )
 
         if not created:
             visit.notes = notes or visit.notes

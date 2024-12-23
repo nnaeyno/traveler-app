@@ -135,4 +135,3 @@ class UserPlaceVisit(models.Model):
         Convenience method to mark a place as visited
         """
         return cls.objects.get_or_create(user=user, place=place)
-

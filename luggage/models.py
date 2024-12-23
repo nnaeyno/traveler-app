@@ -8,11 +8,14 @@ class Trip(models.Model):
     """
     Represents a trip for which the user creates a packing checklist and uploads documents.
     """
+
     name = models.CharField(max_length=100, verbose_name="Trip Name")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="trips")
     start_date = models.DateField(verbose_name="Start Date")
     end_date = models.DateField(verbose_name="End Date")
-    destination = models.ForeignKey(City, on_delete=models.CASCADE, verbose_name="Destination")
+    destination = models.ForeignKey(
+        City, on_delete=models.CASCADE, verbose_name="Destination"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -23,7 +26,10 @@ class ChecklistItem(models.Model):
     """
     Represents an item in the packing checklist.
     """
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name="checklist_items")
+
+    trip = models.ForeignKey(
+        Trip, on_delete=models.CASCADE, related_name="checklist_items"
+    )
     name = models.CharField(max_length=100, verbose_name="Item Name")
     is_packed = models.BooleanField(default=False, verbose_name="Packed Status")
 
@@ -35,6 +41,7 @@ class TravelDocument(models.Model):
     """
     Represents a travel document uploaded by the user for a specific trip.
     """
+
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name="documents")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="documents")
     name = models.CharField(max_length=100, verbose_name="Document Name")
@@ -43,4 +50,3 @@ class TravelDocument(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.trip.name}"
-

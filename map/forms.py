@@ -17,7 +17,7 @@ class LocationForm(forms.Form):
 
 
 class CitySearchForm(forms.Form):
-    CACHE_KEY = 'city_choices_{user_id}'
+    CACHE_KEY = "city_choices_{user_id}"
     CACHE_TIMEOUT = 3600  # 1 hour
 
     city = forms.ChoiceField(
@@ -29,7 +29,7 @@ class CitySearchForm(forms.Form):
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if user:
-            self.fields['city'].choices = self.get_city_choices(user)
+            self.fields["city"].choices = self.get_city_choices(user)
 
     def get_city_choices(self, user):
         cache_key = self.CACHE_KEY.format(user_id=user.id)

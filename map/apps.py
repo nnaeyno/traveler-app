@@ -7,7 +7,7 @@ class CityFrontendConfig(AppConfig):
 
 
 class YourAppConfig(AppConfig):
-    name = 'your_app'
+    name = "your_app"
 
     def ready(self):
         import map.signals

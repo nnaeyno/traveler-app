@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import MapView, PlaceView
 from .user_views import LoginView, RegisterView
+from .views import MapView, PlaceView
 
 app_name = "traveler"
 

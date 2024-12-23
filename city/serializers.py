@@ -2,7 +2,7 @@ from django.core.validators import FileExtensionValidator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from city.models import City, Location, Place, PlaceRating, UserPlaceVisit, PlaceComment
+from city.models import City, Location, Place, PlaceComment, PlaceRating, UserPlaceVisit
 
 
 class CreatePlaceSerializer(serializers.ModelSerializer):
@@ -169,28 +169,28 @@ class CityDetailSerializer(CitySerializer):
 class PlaceCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceComment
-        fields = ['id', 'user', 'place', 'text', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'user']
+        fields = ["id", "user", "place", "text", "created_at", "updated_at"]
+        read_only_fields = ["id", "created_at", "updated_at", "user"]
 
     def create(self, validated_data):
         """
         Override the create method to handle user and place association
         """
-        user = self.context['request'].user
-        validated_data['user'] = user
+        user = self.context["request"].user
+        validated_data["user"] = user
         return super().create(validated_data)
 
 
 class PlaceRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceRating
-        fields = ['id', 'user', 'place', 'rating', 'created_at']
-        read_only_fields = ['id', 'created_at', 'user']
+        fields = ["id", "user", "place", "rating", "created_at"]
+        read_only_fields = ["id", "created_at", "user"]
 
     def create(self, validated_data):
         """
         Override the create method to handle user and place association
         """
-        user = self.context['request'].user
-        validated_data['user'] = user
+        user = self.context["request"].user
+        validated_data["user"] = user
         return super().create(validated_data)

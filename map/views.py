@@ -18,7 +18,7 @@ class PlaceView(TemplateView):
             "description": request.POST.get("description"),
             "latitude": request.POST.get("latitude"),
             "longitude": request.POST.get("longitude"),
-            "user": request.user.id
+            "user": request.user.id,
         }
         files = {"photo": request.FILES.get("photo")}
         api_url = "http://127.0.0.1:8000/api/places/"
@@ -59,4 +59,3 @@ def add_location(request):
         form = LocationForm()
 
     return render(request, "city.html", {"form": form})
-
