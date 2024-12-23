@@ -76,7 +76,7 @@ class CommentView(APIView):
         data = request.data.copy()
         data['user'] = request.user.id
         data['place'] = place.id
-        serializer = self.serializer_class(data=data)
+        serializer = self.serializer_class(data=data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -100,12 +100,7 @@ class PlaceRatingView(APIView):
         data['user'] = request.user.id
         data['place'] = place.id
 
-        try:
-            place_rating = PlaceRating.objects.get(user=request.user, place=place)
-            serializer = self.serializer_class(place_rating, data=data, partial=True)
-        except PlaceRating.DoesNotExist:
-            serializer = self.serializer_class(data=data)
-
+        serializer = self.serializer_class(data=data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

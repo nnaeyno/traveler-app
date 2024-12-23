@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CityView, CommentView, ListPlacesView, PlaceView
+from .views import CityView, CommentView, ListPlacesView, PlaceView, PlaceRatingView
 
 app_name = "cities"
 
@@ -13,4 +13,5 @@ urlpatterns = [
     ),
     path("places/", PlaceView.as_view(), name="add-place"),
     path("places/<int:place_id>/", PlaceView.as_view(), name="place-detail"),
+    path('places/<int:place_id>/ratings/', PlaceRatingView.as_view(), name='place-rating'),
 ]

@@ -123,8 +123,25 @@ class PlaceCommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'place', 'text', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at', 'user']
 
+    def create(self, validated_data):
+        """
+        Override the create method to handle user and place association
+        """
+        user = self.context['request'].user
+        validated_data['user'] = user
+        return super().create(validated_data)
+
+
 class PlaceRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlaceRating
         fields = ['id', 'user', 'place', 'rating', 'created_at']
         read_only_fields = ['id', 'created_at', 'user']
+
+    def create(self, validated_data):
+        """
+        Override the create method to handle user and place association
+        """
+        user = self.context['request'].user
+        validated_data['user'] = user
+        return super().create(validated_data)

@@ -30,4 +30,6 @@ install django-leaflet as well as gdal (brew install gdal pip install gdal)
 5. django web component
 6. luggage app 
 7. mark as visited
+8. swagger
+9. write readme
 
