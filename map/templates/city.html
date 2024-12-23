@@ -90,12 +90,8 @@
 
 
 
-          <div class="search-container">
-             <form method="get" id="city-search-form">
-            {{ form.city }}
-            <button type="button" id="fetch-places-button" class="map-button">GO</button>
-        </form>
-        </div>
+        {% load search_tags %}
+        {% search_form form %}
         <div class="map-theme-toggle" id="toggle">
             <div class="dark-toggle">
                 <i class="material-icons" style="color: white; transform: scale(0.8);">dark_mode</i>
