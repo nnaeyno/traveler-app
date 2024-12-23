@@ -1,3 +1,5 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -47,12 +49,14 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class UserLoginView(APIView):
     permission_classes = [AllowAny]
     serializer_class = UserLoginSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
+        print(request.data)
         if serializer.is_valid():
             identifier = serializer.validated_data["identifier"]
             password = serializer.validated_data["password"]

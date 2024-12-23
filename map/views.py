@@ -1,5 +1,4 @@
 import requests
-from django.contrib.sites import requests
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -19,12 +18,10 @@ class PlaceView(TemplateView):
             "description": request.POST.get("description"),
             "latitude": request.POST.get("latitude"),
             "longitude": request.POST.get("longitude"),
+            "user": request.user.id
         }
         files = {"photo": request.FILES.get("photo")}
-
         api_url = "http://127.0.0.1:8000/api/places/"
-        # headers = {"Authorization": f"Token {request.user.auth_token}"}
-        # headers=headers below
         try:
             response = requests.post(api_url, data=data, files=files)
             if response.status_code == 201:
@@ -35,8 +32,10 @@ class PlaceView(TemplateView):
                     {"success": "Place added successfully!"},
                 )
             else:
+                print(response.json())
                 return render(request, self.template_name, {"error": response.json()})
         except Exception as e:
+            print(str(e))
             return render(request, self.template_name, {"error": str(e)})
 
 
@@ -68,3 +67,7 @@ def add_location(request):
         form = LocationForm()
 
     return render(request, "city.html", {"form": form})
+
+
+class Login(TemplateView):
+    template_name = "login.html"

@@ -1,7 +1,7 @@
 from django.core.mail import send_mail
 from django.conf import settings
 from celery import shared_task
-from user.models import Notification
+from user.models import Notification, User
 from twilio.rest import Client
 
 
@@ -41,10 +41,17 @@ def send_sms_notification(phone_number, message):
 
 
 @shared_task(name='city.tasks.create_comment_notification')
-def create_comment_notification(recipient_id, sender_id, place_name, comment_text):
+def create_comment_notification(recipients, sender_id, place_name, comment_text):
     message = f"{sender_id} commented on your place '{place_name}': {comment_text}"
-    Notification.objects.create(
-        recipient_id=recipient_id,
-        sender_id=sender_id,
-        message=message
-    )
+    recipients = User.objects.filter(id__in=recipients)
+    sender = User.objects.get(id=sender_id)
+    notifications = [
+        Notification(
+            recipient=recipient,
+            sender=sender,
+            message=message
+        )
+        for recipient in recipients
+    ]
+
+    Notification.objects.bulk_create(notifications)

@@ -9,8 +9,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from city.tasks import send_notification_email, create_comment_notification
 from city.models import City, Location, Place, UserPlaceVisit
+from user.models import User
 
-from .serializers import CitySerializer, PlaceSerializer, PlaceCommentSerializer, PlaceRatingSerializer
+from .serializers import CitySerializer, PlaceSerializer, PlaceCommentSerializer, PlaceRatingSerializer, \
+    CreatePlaceSerializer
 
 
 class CityView(APIView):
@@ -78,14 +80,15 @@ class CommentView(APIView):
         user = request.user
         data['user'] = user.id
         data['place'] = place.id
+        recipients = User.objects.filter(cities__places__id=place_id)
+        recipient_ids = list(recipients.values_list('id', flat=True))
         serializer = self.serializer_class(data=data, context={"request": request})
         if serializer.is_valid():
             comment = serializer.save()
             place = comment.place
-            place_creator = place.user
 
             self.notifications.delay(
-                recipient_id=place_creator.id,
+                recipients=recipient_ids,
                 sender_id=user.id,
                 place_name=place.name,
                 comment_text=comment.text
@@ -149,6 +152,7 @@ class ListPlacesView(ListAPIView):
 class PlaceView(APIView):
     permissions = [IsAuthenticated]
     serializer_class = PlaceSerializer
+    create_serializer_class = CreatePlaceSerializer
     visited_class = UserPlaceVisit
 
     def post(self, request):
@@ -156,7 +160,7 @@ class PlaceView(APIView):
         Create a new place
         """
         data = request.data.copy()
-        print(data)
+        data['user'] = request.user.id
         required_fields = ["name", "price"]
         for field in required_fields:
             if field not in data:
@@ -170,13 +174,13 @@ class PlaceView(APIView):
             location, created = Location.objects.get_or_create(
                 lat=data["latitude"], lng=data["longitude"]
             )
-            serializer = self.serializer_class(data=data)
+            serializer = self.create_serializer_class(data=data, context={"request": request})
 
             if serializer.is_valid():
                 place = serializer.save(city=city, location=location)
 
                 return Response(
-                    self.serializer_class(place).data, status=status.HTTP_201_CREATED
+                    self.create_serializer_class(place).data, status=status.HTTP_201_CREATED
                 )
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -201,7 +205,7 @@ class PlaceView(APIView):
                 id=place_id,
             )
 
-            serializer = self.serializer_class(place)
+            serializer = self.serializer_class(place, context={"request": request})
             response_data = serializer.data
             response_data.update(
                 {

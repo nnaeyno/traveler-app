@@ -239,13 +239,10 @@
                 const cityId = cityDropdown.value;
 
                 const formHtml = `
-                <form method="post" action="/city/place/" enctype="multipart/form-data" class="map-marker-popup" id="add-place">
+                <form method="post" action="/place/" enctype="multipart/form-data" class="map-marker-popup" id="add-place">
                     {% csrf_token %}
 
                     <input class="map-city-search-input" type="text" id="id_name" name="name" required placeholder="name"/>
-
-
-<!--                    <input class="map-city-search-input"  type="number" id="id_city" name="city" required placeholder="city"/>-->
 
 
                     <input class="map-city-search-input" type="number" id="id_price" name="price" required placeholder="price"/>

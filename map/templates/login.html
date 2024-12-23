@@ -1,10 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <title>Document</title>
 </head>
+
 <body>
 
+
+    <div class="login-form">
+    <div class="login-header">
+        Sign in to your account
+    </div>
+
+    <div class="login-form-inputs">
+        <!-- Username input field -->
+        <input type="text" id="username" class="login-form-input" placeholder="Username" required>
+        <!-- Password input field -->
+        <input type="password" id="password" class="login-form-input" placeholder="Password" required>
+    </div>
+
+    <div class="login-form-buttons">
+        <!-- Submit Button -->
+        <button type="button" class="login-form-button" id="loginButton">Sign in</button>
+        <div class="login-form-separator">
+            <span class="dash"></span> Or <span class="dash"></span>
+        </div>
+        <button type="button" class="login-form-button">Register here</button>
+    </div>
+</div>
+    <script>
+
+        function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+document.getElementById("loginButton").addEventListener("click", function() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (!username || !password) {
+        alert("Please enter both username and password.");
+        return;
+    }
+
+    const data = {
+        identifier: username,
+        password: password
+    };
+    const apiUrl = `http://127.0.0.1:8000/api/login/`;
+    fetch(apiUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        if (data.tokens) {
+            localStorage.setItem("token", data.token);
+            alert("Login successful!");
+            window.location.href = "/map";
+        } else {
+            alert("Login failed: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred during login.");
+    });
+});
+</script>
+
+
+    <ul class="social-icons">
+        <li>
+            <a href="https://www.facebook.com" target="_blank" aria-label="Facebook">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.twitter.com" target="_blank" aria-label="Twitter">
+                <i class="fab fa-twitter"></i>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.instagram.com" target="_blank" aria-label="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.linkedin.com" target="_blank" aria-label="LinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.youtube.com" target="_blank" aria-label="YouTube">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </li>
+    </ul>
+
+
 </body>
+
 </html>

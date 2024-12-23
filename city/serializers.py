@@ -5,6 +5,56 @@ from rest_framework import serializers
 from city.models import City, Location, Place, PlaceRating, UserPlaceVisit, PlaceComment
 
 
+class CreatePlaceSerializer(serializers.ModelSerializer):
+    city_name = serializers.CharField(source="city.name", read_only=True)
+    location_details = serializers.SerializerMethodField()
+
+    photo = serializers.ImageField(
+        required=False,
+        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "gif"])],
+    )
+
+    class Meta:
+        model = Place
+        fields = [
+            "id",
+            "name",
+            "description",
+            "city",
+            "city_name",
+            "location_details",
+            "price",
+            "photo",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "created_at",
+            "updated_at",
+            "location",
+        ]
+
+    def create(self, validated_data):
+        """
+        Custom create method with additional processing
+        """
+        city = validated_data.pop("city")
+        location = validated_data.pop("location")
+
+        place = Place.objects.create(city=city, location=location, **validated_data)
+
+        return place
+
+    def get_location_details(self, obj):
+        """
+        Retrieve additional location information
+        """
+        return {
+            "lat": obj.location.lat,
+            "lng": obj.location.lng,
+        }
+
+
 class PlaceSerializer(serializers.ModelSerializer):
     """
     Serializer for Place model with comprehensive field handling
@@ -21,8 +71,7 @@ class PlaceSerializer(serializers.ModelSerializer):
         validators=[FileExtensionValidator(["jpg", "jpeg", "png", "gif"])],
     )
 
-    # user_rating = serializers.SerializerMethodField()
-    # user_visited = serializers.SerializerMethodField()
+    user_visited = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -38,7 +87,7 @@ class PlaceSerializer(serializers.ModelSerializer):
             "photo",
             "average_rating",
             "total_ratings",
-            # "user_visited", DONT FORGET THIS
+            "user_visited",
             "comments_count",
             "created_at",
             "updated_at",
