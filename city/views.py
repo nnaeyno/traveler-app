@@ -8,9 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from city.models import City, Location, Place
+from city.models import City, Location, Place, PlaceRating
 
-from .serializers import CitySerializer, PlaceSerializer
+from .serializers import CitySerializer, PlaceSerializer, PlaceCommentSerializer, PlaceRatingSerializer
 
 
 class CityView(APIView):
@@ -65,7 +65,52 @@ class CityView(APIView):
 
 
 class CommentView(APIView):
-    pass
+    permission_classes = [IsAuthenticated]
+    serializer_class = PlaceCommentSerializer
+
+    def post(self, request, place_id):
+        """
+        Create a new comment for a specific place
+        """
+        place = get_object_or_404(Place, id=place_id)
+        data = request.data.copy()
+        data['user'] = request.user.id
+        data['place'] = place.id
+        serializer = self.serializer_class(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PlaceRatingView(APIView):
+    """
+    API endpoint for adding or updating a user's rating for a place
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = PlaceRatingSerializer
+
+    def post(self, request, place_id):
+        """
+        Add or update a rating for a specific place
+        """
+        place = get_object_or_404(Place, id=place_id)
+
+        data = request.data.copy()
+        data['user'] = request.user.id
+        data['place'] = place.id
+
+        try:
+            place_rating = PlaceRating.objects.get(user=request.user, place=place)
+            serializer = self.serializer_class(place_rating, data=data, partial=True)
+        except PlaceRating.DoesNotExist:
+            serializer = self.serializer_class(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ListPlacesView(ListAPIView):

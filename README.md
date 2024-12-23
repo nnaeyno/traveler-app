@@ -29,4 +29,5 @@ install django-leaflet as well as gdal (brew install gdal pip install gdal)
 4. notifications (in progress)
 5. django web component
 6. luggage app 
+7. mark as visited
 

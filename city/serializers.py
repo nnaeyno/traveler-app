@@ -2,7 +2,7 @@ from django.core.validators import FileExtensionValidator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from city.models import City, Location, Place, PlaceRating, UserPlaceVisit
+from city.models import City, Location, Place, PlaceRating, UserPlaceVisit, PlaceComment
 
 
 class PlaceSerializer(serializers.ModelSerializer):
@@ -115,3 +115,16 @@ class CityDetailSerializer(CitySerializer):
 
     class Meta(CitySerializer.Meta):
         fields = CitySerializer.Meta.fields + ["recent_places"]
+
+
+class PlaceCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceComment
+        fields = ['id', 'user', 'place', 'text', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'user']
+
+class PlaceRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlaceRating
+        fields = ['id', 'user', 'place', 'rating', 'created_at']
+        read_only_fields = ['id', 'created_at', 'user']
