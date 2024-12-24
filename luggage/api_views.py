@@ -1,12 +1,17 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from luggage.models import Trip, ChecklistItem, TravelDocument
-from luggage.serializers import TripSerializer, ChecklistItemSerializer, TravelDocumentSerializer
+
+from luggage.models import ChecklistItem, TravelDocument, Trip
+from luggage.serializers import (
+    ChecklistItemSerializer,
+    TravelDocumentSerializer,
+    TripSerializer,
+)
 
 
 class TripViewSet(viewsets.ModelViewSet):
@@ -17,9 +22,11 @@ class TripViewSet(viewsets.ModelViewSet):
         """
         Return trips for the currently authenticated user.
         """
-        return Trip.objects.filter(user=self.request.user).select_related(
-            'destination'
-        ).prefetch_related('checklist_items', 'documents')
+        return (
+            Trip.objects.filter(user=self.request.user)
+            .select_related("destination")
+            .prefetch_related("checklist_items", "documents")
+        )
 
     def perform_create(self, serializer):
         """
@@ -38,7 +45,7 @@ class ChecklistViewSet(viewsets.ModelViewSet):
         """
         return ChecklistItem.objects.filter(
             trip__user=self.request.user
-        ).select_related('trip')
+        ).select_related("trip")
 
     def perform_create(self, serializer):
         """
@@ -46,16 +53,16 @@ class ChecklistViewSet(viewsets.ModelViewSet):
         """
         serializer.save()
 
-    @action(detail=False, methods=['GET'])
+    @action(detail=False, methods=["GET"])
     def by_trip(self, request):
         """
         Get checklist items for a specific trip.
         """
-        trip_id = request.query_params.get('trip_id')
+        trip_id = request.query_params.get("trip_id")
         if not trip_id:
             return Response(
                 {"error": "trip_id query parameter is required"},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         trip = get_object_or_404(Trip, id=trip_id, user=request.user)
@@ -63,7 +70,7 @@ class ChecklistViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(items, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['PATCH'])
+    @action(detail=True, methods=["PATCH"])
     def toggle_packed(self, request, pk=None):
         """
         Toggle the packed status of an item.
@@ -78,25 +85,18 @@ class ChecklistViewSet(viewsets.ModelViewSet):
         """
         Update multiple checklist items at once.
         """
-        items = request.data.get('items', [])
+        items = request.data.get("items", [])
         if not items:
             return Response(
-                {"error": "No items provided"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "No items provided"}, status=status.HTTP_400_BAD_REQUEST
             )
 
         updated_items = []
         for item_data in items:
             item = get_object_or_404(
-                ChecklistItem,
-                id=item_data.get('id'),
-                trip__user=request.user
+                ChecklistItem, id=item_data.get("id"), trip__user=request.user
             )
-            serializer = self.get_serializer(
-                item,
-                data=item_data,
-                partial=True
-            )
+            serializer = self.get_serializer(item, data=item_data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 updated_items.append(serializer.data)
@@ -113,9 +113,9 @@ class TravelDocumentViewSet(viewsets.ModelViewSet):
         """
         Return documents for the authenticated user's trips.
         """
-        return TravelDocument.objects.filter(
-            user=self.request.user
-        ).select_related('trip')
+        return TravelDocument.objects.filter(user=self.request.user).select_related(
+            "trip"
+        )
 
     def perform_create(self, serializer):
         """
@@ -123,16 +123,16 @@ class TravelDocumentViewSet(viewsets.ModelViewSet):
         """
         serializer.save(user=self.request.user)
 
-    @action(detail=False, methods=['GET'])
+    @action(detail=False, methods=["GET"])
     def by_trip(self, request):
         """
         Get documents for a specific trip.
         """
-        trip_id = request.query_params.get('trip_id')
+        trip_id = request.query_params.get("trip_id")
         if not trip_id:
             return Response(
                 {"error": "trip_id query parameter is required"},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         trip = get_object_or_404(Trip, id=trip_id, user=request.user)
@@ -150,18 +150,17 @@ class TravelDocumentViewSet(viewsets.ModelViewSet):
             document.file.delete(save=False)
         return super().destroy(request, *args, **kwargs)
 
-    @action(detail=True, methods=['PUT'])
+    @action(detail=True, methods=["PUT"])
     def rename(self, request, pk=None):
         """
         Rename a document.
         """
         document = self.get_object()
-        new_name = request.data.get('name')
+        new_name = request.data.get("name")
 
         if not new_name:
             return Response(
-                {"error": "New name is required"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "New name is required"}, status=status.HTTP_400_BAD_REQUEST
             )
 
         document.name = new_name
