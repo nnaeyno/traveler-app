@@ -1,8 +1,10 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 
 from .views import CityView, CommentView, ListPlacesView, PlaceRatingView, PlaceView
 
 app_name = "cities"
+router = routers.DefaultRouter()
 
 urlpatterns = [
     path("cities/", CityView.as_view(), name="city-list-create"),
@@ -18,4 +20,5 @@ urlpatterns = [
     path(
         "places/<int:place_id>/ratings/", PlaceRatingView.as_view(), name="place-rating"
     ),
+    path('', include(router.urls)),
 ]

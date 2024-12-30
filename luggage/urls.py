@@ -4,7 +4,8 @@ from rest_framework.routers import DefaultRouter
 from .api_views import ChecklistViewSet, TravelDocumentViewSet, TripViewSet
 from .views import add_checklist_item, create_trip
 
-# trying different approaches
+app_name = 'luggage'
+
 router = DefaultRouter()
 router.register(r"trip", TripViewSet, basename="trip")
 router.register(r"checklist", ChecklistViewSet, basename="checklist")

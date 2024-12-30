@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    "drf_spectacular",
     "drf_yasg",
     "django_filters",
     "celery",
@@ -111,6 +112,9 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = "user.User"
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
@@ -121,6 +125,11 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ]
 }
 
 SIMPLE_JWT = {
@@ -164,7 +173,6 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = "EMAIL"  # Replace with your email address
 EMAIL_HOST_PASSWORD = "APP_PASSWORD"  # Replace with your email password
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
 
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
