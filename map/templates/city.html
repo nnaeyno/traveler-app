@@ -205,7 +205,6 @@
                             detail.map.removeLayer(layer);
                         }
                     });
-
                     data.forEach(place => {
                         const marker = L.marker([place.location_details.lat, place.location_details.lng]).addTo(detail.map);
                         marker.bindPopup(`

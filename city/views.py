@@ -1,3 +1,4 @@
+import jwt
 from django.db.models import Count, Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -10,6 +11,7 @@ from rest_framework.views import APIView
 
 from city.models import City, Location, Place, UserPlaceVisit
 from city.tasks import create_comment_notification, send_notification_email
+from roadrunner import settings
 from user.models import User
 
 from .serializers import (
@@ -48,6 +50,17 @@ class CityView(APIView):
         """
         Retrieve a specific city or list of cities for the current user
         """
+        auth_header = request.headers.get("Authorization")
+        print(request.headers)
+        if auth_header:
+            try:
+                token = auth_header.split()[1]
+                decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+                print("Decoded Token:", decoded)
+            except jwt.ExpiredSignatureError:
+                print("Token has expired.")
+            except jwt.InvalidTokenError:
+                print("Invalid token.")
         if city_id:
             try:
                 city = (
@@ -66,7 +79,7 @@ class CityView(APIView):
                     {"detail": "City not found or not associated with user"},
                     status=status.HTTP_404_NOT_FOUND,
                 )
-
+        print("Request", request)
         cities = request.user.cities.annotate(places_count=Count("places"))
         serializer = self.serializer_class(cities, many=True)
         return Response(serializer.data)
