@@ -24,78 +24,22 @@
         Sign in to your account
     </div>
 
+   <form method="POST" action="{% url 'traveler:login' %}">
+    {% csrf_token %}
     <div class="login-form-inputs">
-        <!-- Username input field -->
-        <input type="text" id="username" class="login-form-input" placeholder="Username or Email" required>
-        <!-- Password input field -->
-        <input type="password" id="password" class="login-form-input" placeholder="Password" required>
+        {{ form.non_field_errors }}
+        {{ form.username }}
+        {{ form.password }}
     </div>
-
     <div class="login-form-buttons">
-        <!-- Submit Button -->
-        <button type="button" class="login-form-button" id="loginButton">Sign in</button>
+        <button type="submit" class="login-form-button" id="loginButton">Sign in</button>
         <div class="login-form-separator">
             <span class="dash"></span> Or <span class="dash"></span>
         </div>
-        <button type="button" class="login-form-button">Register here</button>
+        <button type="submit" class="login-form-button">Register here</button>
     </div>
+       </form>
 </div>
-    <script>
-
-        function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-        const cookies = document.cookie.split(";");
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + "=")) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-document.getElementById("loginButton").addEventListener("click", function() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-
-    if (!username || !password) {
-        alert("Please enter both username and password.");
-        return;
-    }
-
-    const data = {
-        identifier: username,
-        password: password
-    };
-    const apiUrl = `http://127.0.0.1:8000/api/login/`;
-    fetch(apiUrl, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCookie("csrftoken"),
-        },
-        body: JSON.stringify(data),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data)
-        if (data.tokens) {
-            localStorage.setItem("token", data.token);
-            alert("Login successful!");
-            window.location.href = "/map";
-        } else {
-            alert("Login failed: " + data.error);
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        alert("An error occurred during login.");
-    });
-});
-</script>
-
 
     <ul class="social-icons">
         <li>

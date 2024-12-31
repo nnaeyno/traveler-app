@@ -1,9 +1,11 @@
 import requests
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
+from .Mixin import JWTLoginRequiredMixin
 from .forms import CitySearchForm, LocationForm
 
 
@@ -39,13 +41,14 @@ class PlaceView(TemplateView):
             return render(request, self.template_name, {"error": str(e)})
 
 
-class MapView(TemplateView):
+class MapView(JWTLoginRequiredMixin, TemplateView):
     template_name = "city.html"
     place_template = "place.html"
     city_search_form = CitySearchForm
+    login_url = 'traveler:login'
 
     def get(self, request, *args, **kwargs):
-        form = self.city_search_form(user=request.user)
+        form = self.city_search_form(request)
         return self.render_to_response({"form": form})
 
 

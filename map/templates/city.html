@@ -200,12 +200,13 @@
                 .then(response => response.json())
                 .then(data => {
                     // Clear existing markers
+                    console.log('Received data:', data);
                     detail.map.eachLayer(layer => {
                         if (layer instanceof L.Marker) {
                             detail.map.removeLayer(layer);
                         }
                     });
-
+                    console.log('data', data)
                     data.forEach(place => {
                         const marker = L.marker([place.location_details.lat, place.location_details.lng]).addTo(detail.map);
                         marker.bindPopup(`
