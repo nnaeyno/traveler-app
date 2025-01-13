@@ -48,6 +48,15 @@ class CitySearchForm(forms.Form):
             print("No access token found")
             return []
 
+        user_id = getattr(request.user, 'id', self.access_token)
+        cache_key = self.CACHE_KEY.format(user_id=user_id)
+        print("user_id", user_id)
+        cached_choices = cache.get(cache_key)
+        if cached_choices:
+            print("Using cached city choices")
+            print(cached_choices)
+            return cached_choices
+
         try:
             decoded = jwt.decode(self.access_token, options={"verify_signature": False})
             print("Decoded Token:", decoded)
@@ -87,10 +96,14 @@ class CitySearchForm(forms.Form):
 
             if response.status_code == 200:
                 cities_data = response.json()
-                return [
+                print(cities_data)
+                city_choices = [
                     (city['id'], f"{city['name']} ({city['places_count']} places)")
                     for city in cities_data
                 ]
+                print(city_choices)
+                cache.set(cache_key, city_choices, self.CACHE_TIMEOUT)
+                return city_choices
             else:
                 print(f"Error: Status code {response.status_code}")
                 return []

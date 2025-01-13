@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
-from .Mixin import JWTLoginRequiredMixin
+from .mixin import JWTLoginRequiredMixin
 from .forms import CitySearchForm, LocationForm
 
 
